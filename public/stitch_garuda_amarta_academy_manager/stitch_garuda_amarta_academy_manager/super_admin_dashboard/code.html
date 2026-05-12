@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Super Admin Dashboard - PS. Garuda Amarta</title>
+<!-- Google Fonts: Hanken Grotesk & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#ff907f",
+                    "on-tertiary-fixed-variant": "#454748",
+                    "on-secondary-fixed": "#151c23",
+                    "surface-container-high": "#e0e9f5",
+                    "outline-variant": "#e3beb8",
+                    "inverse-primary": "#ffb4a8",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed": "#ffdad4",
+                    "primary-fixed-dim": "#ffb4a8",
+                    "inverse-surface": "#29313a",
+                    "surface-variant": "#dae3ef",
+                    "surface-container-low": "#ecf4ff",
+                    "surface-container": "#e6effa",
+                    "surface-tint": "#b52619",
+                    "tertiary-fixed": "#e1e3e4",
+                    "tertiary": "#2a2d2e",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#5e656d",
+                    "on-primary-fixed-variant": "#920703",
+                    "on-primary-fixed": "#410000",
+                    "primary-container": "#8b0000",
+                    "on-background": "#141c25",
+                    "background": "#f7f9ff",
+                    "surface-dim": "#d2dbe6",
+                    "on-surface": "#141c25",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#404344",
+                    "surface-bright": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "surface": "#f7f9ff",
+                    "on-secondary-fixed-variant": "#40474f",
+                    "secondary-fixed": "#dce3ec",
+                    "secondary-fixed-dim": "#c0c7d0",
+                    "primary": "#610000",
+                    "on-tertiary-container": "#aeafb0",
+                    "on-tertiary-fixed": "#191c1d",
+                    "secondary-container": "#dce3ec",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#dae3ef",
+                    "outline": "#8e706b",
+                    "on-surface-variant": "#5a403c",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#c5c7c8",
+                    "secondary": "#585f67",
+                    "error-container": "#ffdad6",
+                    "inverse-on-surface": "#e9f2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "gutter": "24px",
+                    "xl": "80px",
+                    "xs": "4px",
+                    "max-width": "1440px",
+                    "md": "24px",
+                    "base": "8px",
+                    "lg": "48px",
+                    "sm": "12px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "label-md": ["JetBrains Mono"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "label-sm": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- Shared Component: SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant dark:border-outline flex flex-col py-md space-y-base z-50">
+<!-- Header -->
+<div class="px-md pb-md border-b border-outline-variant flex items-center gap-sm">
+<div class="w-10 h-10 bg-primary rounded-DEFAULT flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined fill">shield</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary-fixed">Garuda Amarta</h1>
+<p class="font-label-sm text-label-sm text-secondary">Management Portal</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 overflow-y-auto py-sm">
+<!-- Active Tab: Dashboard -->
+<a class="bg-primary text-on-primary rounded-lg mx-2 flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:bg-surface-variant dark:hover:bg-tertiary-container mx-2 rounded-lg transition-all duration-200 ease-in-out flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Financials</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:bg-surface-variant dark:hover:bg-tertiary-container mx-2 rounded-lg transition-all duration-200 ease-in-out flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-md text-label-md">Curriculum</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:bg-surface-variant dark:hover:bg-tertiary-container mx-2 rounded-lg transition-all duration-200 ease-in-out flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-md text-label-md">Attendance</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:bg-surface-variant dark:hover:bg-tertiary-container mx-2 rounded-lg transition-all duration-200 ease-in-out flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="font-label-md text-label-md">Grading</span>
+</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:bg-surface-variant dark:hover:bg-tertiary-container mx-2 rounded-lg transition-all duration-200 ease-in-out flex items-center gap-sm px-sm py-sm mb-xs" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-md mt-auto pt-md border-t border-outline-variant">
+<button class="w-full bg-tertiary text-on-tertiary hover:bg-on-background py-sm px-md rounded-DEFAULT font-label-md text-label-md transition-colors flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+                Report Royalty
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 p-margin-desktop bg-background min-h-screen">
+<!-- Page Header -->
+<header class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Super Admin Overview</h2>
+<p class="font-body-md text-body-md text-secondary mt-xs">System status and master data management.</p>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-xs text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-DEFAULT bg-surface-variant border border-outline-variant overflow-hidden">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate administrator in a modern office setting. The lighting is bright and even, casting soft shadows. The individual is wearing formal business attire, exuding authority and competence. The background is slightly blurred out, featuring minimalist office decor with neutral gray tones and subtle crimson accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNpr4LAK3J-z3lZTUVjuLdZvOqxHvyh_DimB23uLeliKe0iyF2Y5930Jsdn49E2MEALnfU520Ug73vJ6UYRigbqUTr3oVFvG-PAimai0AwsJgtQSgqZZIqP45H0g-J7xnNOYYjdkoSfNCbDjlV_ZGUvRfLLAZzYMc8F-P4ZrRMjwtLZ_IADVUgkkxnoaHR58_ryJNxcIcE6DEQ8l3tkwVZPZqVUSI1WE0ctYVALzSkY45R-KsCHqTtGDBVsGqiNqnYOjof54D67g"/>
+</div>
+</div>
+</header>
+<!-- System Overview Cards (Level 1 Elevation: Borders, no shadow) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-lg">
+<!-- Total Users Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Total Users</h3>
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-xs rounded-DEFAULT">group</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-primary font-bold font-label-md">12,408</div>
+<div class="flex items-center gap-xs mt-xs text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs text-[#2e7d32]">trending_up</span>
+<span class="text-[#2e7d32]">+4.2%</span> from last month
+                    </div>
+</div>
+</div>
+<!-- Active Rantings Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Active Rantings</h3>
+<span class="material-symbols-outlined text-tertiary bg-surface-variant p-xs rounded-DEFAULT">account_balance</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-on-background font-bold font-label-md">84</div>
+<div class="flex items-center gap-xs mt-xs text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs">horizontal_rule</span>
+<span>No change</span>
+</div>
+</div>
+</div>
+<!-- Monthly Revenue Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col justify-between">
+<div class="flex justify-between items-start mb-md">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider">Monthly Revenue</h3>
+<span class="material-symbols-outlined text-primary bg-primary-fixed p-xs rounded-DEFAULT">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-headline-lg text-headline-lg text-primary font-bold font-label-md">Rp 142.5M</div>
+<div class="flex items-center gap-xs mt-xs text-secondary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs text-[#2e7d32]">trending_up</span>
+<span class="text-[#2e7d32]">+12.5%</span> from last month
+                    </div>
+</div>
+</div>
+</section>
+<!-- Master Data Quick Access (Bento Grid Style) -->
+<section class="mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-background mb-md">Master Data Management</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<a class="group block bg-surface-container-lowest border border-outline-variant hover:border-primary transition-colors rounded-lg p-md relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-full -mr-8 -mt-8 opacity-50 group-hover:bg-primary-fixed transition-colors"></div>
+<span class="material-symbols-outlined text-tertiary group-hover:text-primary text-3xl mb-sm relative z-10">badge</span>
+<h4 class="font-headline-md text-headline-md text-on-background mb-xs relative z-10">Pengurus</h4>
+<p class="font-body-md text-body-md text-secondary relative z-10">Manage regional and branch administrators.</p>
+</a>
+<a class="group block bg-surface-container-lowest border border-outline-variant hover:border-primary transition-colors rounded-lg p-md relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-full -mr-8 -mt-8 opacity-50 group-hover:bg-primary-fixed transition-colors"></div>
+<span class="material-symbols-outlined text-tertiary group-hover:text-primary text-3xl mb-sm relative z-10">sports_martial_arts</span>
+<h4 class="font-headline-md text-headline-md text-on-background mb-xs relative z-10">Sabuk</h4>
+<p class="font-body-md text-body-md text-secondary relative z-10">Configure rank progressions and requirements.</p>
+</a>
+<a class="group block bg-surface-container-lowest border border-outline-variant hover:border-primary transition-colors rounded-lg p-md relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-full -mr-8 -mt-8 opacity-50 group-hover:bg-primary-fixed transition-colors"></div>
+<span class="material-symbols-outlined text-tertiary group-hover:text-primary text-3xl mb-sm relative z-10">request_quote</span>
+<h4 class="font-headline-md text-headline-md text-on-background mb-xs relative z-10">Royalti</h4>
+<p class="font-body-md text-body-md text-secondary relative z-10">Set fee structures and reporting periods.</p>
+</a>
+</div>
+</section>
+<!-- Main Content Area: Table and Logs -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- User Management Table (8 cols) -->
+<div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden flex flex-col">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface">
+<h3 class="font-headline-md text-headline-md text-on-background">Recent Administrative Users</h3>
+<button class="bg-primary text-on-primary px-sm py-xs rounded-DEFAULT font-label-md text-label-md hover:bg-primary-container transition-colors">Add User</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-tertiary text-on-tertiary font-label-sm text-label-sm uppercase tracking-wider">
+<th class="p-sm font-medium">ID</th>
+<th class="p-sm font-medium">Name</th>
+<th class="p-sm font-medium">Role</th>
+<th class="p-sm font-medium">Branch/Ranting</th>
+<th class="p-sm font-medium text-right">Status</th>
+</tr>
+</thead>
+<tbody class="font-label-md text-label-md text-on-background">
+<tr class="border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<td class="p-sm text-secondary font-label-md">USR-992</td>
+<td class="p-sm font-medium">Budi Santoso</td>
+<td class="p-sm">Ketua Ranting</td>
+<td class="p-sm text-secondary">Ranting Jakarta Selatan</td>
+<td class="p-sm text-right">
+<span class="inline-block px-xs py-xs bg-[#e8f5e9] text-[#1b5e20] rounded-DEFAULT text-xs uppercase tracking-wide">Active</span>
+</td>
+</tr>
+<tr class="bg-surface border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<td class="p-sm text-secondary font-label-md">USR-991</td>
+<td class="p-sm font-medium">Agus Wijaya</td>
+<td class="p-sm">Bendahara</td>
+<td class="p-sm text-secondary">Pusat</td>
+<td class="p-sm text-right">
+<span class="inline-block px-xs py-xs bg-[#e8f5e9] text-[#1b5e20] rounded-DEFAULT text-xs uppercase tracking-wide">Active</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-bright transition-colors">
+<td class="p-sm text-secondary font-label-md">USR-988</td>
+<td class="p-sm font-medium">Siti Rahma</td>
+<td class="p-sm">Admin Cabang</td>
+<td class="p-sm text-secondary">Cabang Bandung</td>
+<td class="p-sm text-right">
+<span class="inline-block px-xs py-xs bg-[#fff8e1] text-[#f57f17] rounded-DEFAULT text-xs uppercase tracking-wide">Pending</span>
+</td>
+</tr>
+<tr class="bg-surface hover:bg-surface-bright transition-colors">
+<td class="p-sm text-secondary font-label-md">USR-985</td>
+<td class="p-sm font-medium">Hendra Gunawan</td>
+<td class="p-sm">Pelatih Utama</td>
+<td class="p-sm text-secondary">Ranting Surabaya</td>
+<td class="p-sm text-right">
+<span class="inline-block px-xs py-xs bg-[#ffebee] text-[#b71c1c] rounded-DEFAULT text-xs uppercase tracking-wide">Suspended</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm border-t border-outline-variant bg-surface text-center">
+<a class="text-primary font-label-md text-label-md hover:underline" href="#">View All Users</a>
+</div>
+</div>
+<!-- System Activity Logs (4 cols) -->
+<div class="lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-background mb-md pb-xs border-b border-outline-variant">Activity Logs</h3>
+<div class="flex-1 space-y-sm overflow-y-auto pr-xs">
+<div class="flex gap-sm items-start">
+<div class="mt-xs w-2 h-2 rounded-full bg-primary flex-shrink-0"></div>
+<div>
+<p class="font-body-md text-body-md text-on-background text-sm">Royalti requirement updated for Sabuk Hitam.</p>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">System Admin • 10:42 AM</p>
+</div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="mt-xs w-2 h-2 rounded-full bg-tertiary flex-shrink-0"></div>
+<div>
+<p class="font-body-md text-body-md text-on-background text-sm">New Ranting registered: Bekasi Timur.</p>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">Budi S. • 09:15 AM</p>
+</div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="mt-xs w-2 h-2 rounded-full bg-tertiary flex-shrink-0"></div>
+<div>
+<p class="font-body-md text-body-md text-on-background text-sm">Monthly financial report generated.</p>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">System Auto • 00:01 AM</p>
+</div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="mt-xs w-2 h-2 rounded-full bg-[#f57f17] flex-shrink-0"></div>
+<div>
+<p class="font-body-md text-body-md text-on-background text-sm">Failed login attempt (IP: 192.168.1.45).</p>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">Security • Yesterday, 23:40</p>
+</div>
+</div>
+<div class="flex gap-sm items-start">
+<div class="mt-xs w-2 h-2 rounded-full bg-tertiary flex-shrink-0"></div>
+<div>
+<p class="font-body-md text-body-md text-on-background text-sm">User USR-985 suspended.</p>
+<p class="font-label-sm text-label-sm text-secondary mt-xs">System Admin • Yesterday, 14:20</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body></html>
