@@ -11,40 +11,46 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['role', 'ranting'])->get();
-        $roles = Role::all();
-        $rantings = Ranting::all();
+        $query = User::with(['role', 'ranting']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
 
         return Inertia::render('Admin/Users/Index', [
-            'users' => $users,
-            'roles' => $roles,
-            'rantings' => $rantings,
+            'users'    => $query->paginate(25)->withQueryString(),
+            'roles'    => Role::all(),
+            'rantings' => Ranting::all(),
+            'filters'  => $request->only('search'),
+            'stats'    => [
+                'total' => User::count(),
+                'aktif' => User::where('is_aktif', true)->count(),
+            ],
         ]);
     }
 
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'role_id' => 'required|exists:roles,id',
+            'role_id'   => 'required|exists:roles,id',
             'ranting_id' => 'nullable|exists:rantings,id',
-            'is_aktif' => 'required|boolean',
+            'is_aktif'  => 'required|boolean',
         ]);
 
-        // Proteksi: Respati dan Bagus tidak bisa diubah role-nya atau dinonaktifkan
-        if ($user->email === 'respati@garuda.com' || $user->email === 'bagus@garuda.com') {
-            $user->update([
-                'is_aktif' => true, // Selalu aktif
-                // role_id tidak diupdate untuk menjaga mereka tetap Super Admin
-            ]);
-            return redirect()->back()->with('message', 'Biodata Super Admin utama diperbarui (Role & Status diproteksi).');
+        if ($user->role?->nama_role === 'Super Admin') {
+            return redirect()->back()->with('error', 'Role dan status Super Admin tidak dapat diubah.');
         }
 
         $user->update([
-            'role_id' => $request->role_id,
+            'role_id'    => $request->role_id,
             'ranting_id' => $request->ranting_id ?: null,
-            'is_aktif' => $request->is_aktif,
+            'is_aktif'   => $request->is_aktif,
         ]);
 
         return redirect()->back()->with('message', 'User berhasil diperbarui.');
@@ -52,12 +58,16 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        // Mencegah hapus diri sendiri
         if (auth()->id() === $user->id) {
             return redirect()->back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri.');
         }
 
+        if ($user->role?->nama_role === 'Super Admin') {
+            return redirect()->back()->with('error', 'Akun Super Admin tidak dapat dihapus.');
+        }
+
         $user->delete();
+
         return redirect()->back()->with('message', 'User berhasil dihapus.');
     }
 }

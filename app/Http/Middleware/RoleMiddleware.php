@@ -19,9 +19,9 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        $userRole = $request->user()->role->nama_role;
+        $userRole = $request->user()->role?->nama_role;
 
-        if (!in_array($userRole, $roles)) {
+        if (!$userRole || !in_array($userRole, $roles)) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 

@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -37,15 +38,19 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role_id' => 'required|exists:roles,id',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()->min(8)->mixedCase()],
+            'role_id' => ['required', Rule::exists('roles', 'id')->where(function ($q) {
+                $q->whereIn('nama_role', ['Pelatih', 'Murid']);
+            })],
             'gelar' => 'nullable|string|max:100',
-            'alamat' => 'nullable|string',
+            'alamat' => 'nullable|string|max:2000',
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
             'ranting_id' => 'nullable|exists:rantings,id',
-            'latihan_di' => 'nullable|string', // Khusus Murid
-            'training_locations' => 'nullable|array', // Khusus Pelatih
+            'latihan_di' => 'nullable|string|max:255',
+            'training_locations' => 'nullable|array|max:10',
+            'training_locations.*.nama_lokasi' => 'required|string|max:255',
+            'training_locations.*.alamat_lokasi' => 'required|string|max:1000',
         ]);
 
         $user = User::create([
