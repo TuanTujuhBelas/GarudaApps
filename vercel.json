@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "buildCommand": "npm ci && npm run build",
     "functions": {
         "api/index.php": {
             "runtime": "vercel-php@0.7.4"
@@ -21,7 +22,7 @@
     ],
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "true",
+        "APP_DEBUG": "false",
         "APP_URL": "https://garuda-apps.vercel.app",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
