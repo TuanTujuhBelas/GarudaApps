@@ -24,7 +24,7 @@ const BULAN = [
 const selectClass = 'bg-white/5 border border-white/10 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50';
 const inputDarkClass = 'mt-1 block w-full bg-white/5 border-white/10 text-white placeholder-gray-600 rounded-lg';
 
-export default function Keuangan({ cashflows, filters, saldo }) {
+export default function Keuangan({ cashflows, filters, saldo, routeNames }) {
     const [isAddOpen, setIsAddOpen]     = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [deletingItem, setDeletingItem] = useState(null);
@@ -41,7 +41,7 @@ export default function Keuangan({ cashflows, filters, saldo }) {
 
     useEffect(() => {
         if (isFirstRender.current) { isFirstRender.current = false; return; }
-        router.get(route('bendahara.keuangan.index'),
+        router.get(route(routeNames.index),
             { bulan: filterBulan || undefined, tahun: filterTahun || undefined },
             { preserveState: true, replace: true, preserveScroll: true }
         );
@@ -62,14 +62,14 @@ export default function Keuangan({ cashflows, filters, saldo }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (editingItem) {
-            patch(route('bendahara.keuangan.update', editingItem.id), { onSuccess: closeModal });
+            patch(route(routeNames.update, editingItem.id), { onSuccess: closeModal });
         } else {
-            post(route('bendahara.keuangan.store'), { onSuccess: closeModal });
+            post(route(routeNames.store), { onSuccess: closeModal });
         }
     };
 
     const handleDelete = () => {
-        router.delete(route('bendahara.keuangan.destroy', deletingItem.id), {
+        router.delete(route(routeNames.destroy, deletingItem.id), {
             onSuccess: () => setDeletingItem(null),
         });
     };

@@ -14,7 +14,7 @@ export default function Index({ users, roles, rantings, filters, stats }) {
     const [deletingUser, setDeletingUser] = useState(null);
     const isFirstRender = useRef(true);
 
-    const isSuperAdmin = (user) => user.role?.nama_role === 'Super Admin';
+    const isSuperAdmin = (user) => user?.role?.nama_role === 'Super Admin';
 
     useEffect(() => {
         if (isFirstRender.current) {

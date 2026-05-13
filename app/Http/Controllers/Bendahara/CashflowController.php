@@ -21,9 +21,15 @@ class CashflowController extends Controller
         }
 
         return Inertia::render('Bendahara/Keuangan', [
-            'cashflows' => $query->paginate(25)->withQueryString(),
-            'filters'   => $request->only(['bulan', 'tahun']),
-            'saldo'     => $this->hitungSaldo(),
+            'cashflows'  => $query->paginate(25)->withQueryString(),
+            'filters'    => $request->only(['bulan', 'tahun']),
+            'saldo'      => $this->hitungSaldo(),
+            'routeNames' => [
+                'index'   => 'bendahara.keuangan.index',
+                'store'   => 'bendahara.keuangan.store',
+                'update'  => 'bendahara.keuangan.update',
+                'destroy' => 'bendahara.keuangan.destroy',
+            ],
         ]);
     }
 

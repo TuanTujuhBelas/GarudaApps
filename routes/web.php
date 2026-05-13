@@ -31,6 +31,9 @@ Route::middleware(['auth', 'verified', 'role:Super Admin'])->group(function () {
     Route::delete('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/keuangan', [\App\Http\Controllers\Admin\KeuanganController::class, 'index'])->name('admin.keuangan.index');
+    Route::post('/admin/keuangan', [\App\Http\Controllers\Admin\KeuanganController::class, 'store'])->name('admin.keuangan.store');
+    Route::patch('/admin/keuangan/{cashflow}', [\App\Http\Controllers\Admin\KeuanganController::class, 'update'])->name('admin.keuangan.update');
+    Route::delete('/admin/keuangan/{cashflow}', [\App\Http\Controllers\Admin\KeuanganController::class, 'destroy'])->name('admin.keuangan.destroy');
 
     Route::get('/admin/events', [\App\Http\Controllers\Admin\EventController::class, 'index'])->name('admin.events.index');
     Route::post('/admin/events', [\App\Http\Controllers\Admin\EventController::class, 'store'])->name('admin.events.store');
