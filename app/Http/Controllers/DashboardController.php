@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $role = $user->role->nama_role;
+        $role = $user->role?->nama_role;
 
         switch ($role) {
             case 'Super Admin':

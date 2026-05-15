@@ -49,18 +49,24 @@ class EventController extends Controller
 
         $path = $request->file('file_berkas')->store('berkas', 'public');
 
-        if ($existing) {
-            if ($existing->file_berkas_path) {
-                Storage::disk('public')->delete($existing->file_berkas_path);
+        try {
+            if ($existing) {
+                $oldPath = $existing->file_berkas_path;
+                $existing->update(['file_berkas_path' => $path, 'status' => 'Menunggu']);
+                if ($oldPath) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+            } else {
+                EventRegistration::create([
+                    'event_id'         => $event->id,
+                    'murid_id'         => auth()->id(),
+                    'file_berkas_path' => $path,
+                    'status'           => 'Menunggu',
+                ]);
             }
-            $existing->update(['file_berkas_path' => $path, 'status' => 'Menunggu']);
-        } else {
-            EventRegistration::create([
-                'event_id'        => $event->id,
-                'murid_id'        => auth()->id(),
-                'file_berkas_path' => $path,
-                'status'          => 'Menunggu',
-            ]);
+        } catch (\Exception $e) {
+            Storage::disk('public')->delete($path);
+            throw $e;
         }
 
         return redirect()->back()->with('message', 'Berkas berhasil dikirim, menunggu verifikasi.');

@@ -22,11 +22,9 @@ export default function Keuangan({ cashflows, filters, saldo }) {
     const [filterTahun, setFilterTahun] = useState(filters?.tahun || '');
     const isFirstRender = useRef(true);
 
-    const routeName = route().current()?.startsWith('admin') ? 'admin.keuangan.index' : 'pelatih.keuangan.index';
-
     useEffect(() => {
         if (isFirstRender.current) { isFirstRender.current = false; return; }
-        router.get(route(routeName),
+        router.get(route('pelatih.keuangan.index'),
             { bulan: filterBulan || undefined, tahun: filterTahun || undefined },
             { preserveState: true, replace: true, preserveScroll: true }
         );

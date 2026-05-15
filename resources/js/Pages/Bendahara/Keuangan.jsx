@@ -39,13 +39,15 @@ export default function Keuangan({ cashflows, filters, saldo, routeNames }) {
         tanggal_transaksi: new Date().toISOString().split('T')[0],
     });
 
+    const indexRoute = routeNames.index;
+
     useEffect(() => {
         if (isFirstRender.current) { isFirstRender.current = false; return; }
-        router.get(route(routeNames.index),
+        router.get(route(indexRoute),
             { bulan: filterBulan || undefined, tahun: filterTahun || undefined },
             { preserveState: true, replace: true, preserveScroll: true }
         );
-    }, [filterBulan, filterTahun]);
+    }, [filterBulan, filterTahun, indexRoute]);
 
     const openEdit = (item) => {
         setEditingItem(item);

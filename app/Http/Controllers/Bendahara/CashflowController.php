@@ -23,7 +23,7 @@ class CashflowController extends Controller
         return Inertia::render('Bendahara/Keuangan', [
             'cashflows'  => $query->paginate(25)->withQueryString(),
             'filters'    => $request->only(['bulan', 'tahun']),
-            'saldo'      => $this->hitungSaldo(),
+            'saldo'      => $this->hitungSaldo($request),
             'routeNames' => [
                 'index'   => 'bendahara.keuangan.index',
                 'store'   => 'bendahara.keuangan.store',
@@ -55,6 +55,8 @@ class CashflowController extends Controller
 
     public function update(Request $request, Cashflow $cashflow)
     {
+        abort_if($cashflow->bendahara_id !== auth()->id(), 403);
+
         $request->validate([
             'tipe_transaksi'    => 'required|in:Pemasukan,Pengeluaran',
             'nominal'           => 'required|numeric|min:1',
@@ -69,15 +71,23 @@ class CashflowController extends Controller
 
     public function destroy(Cashflow $cashflow)
     {
+        abort_if($cashflow->bendahara_id !== auth()->id(), 403);
+
         $cashflow->delete();
 
         return redirect()->back()->with('message', 'Transaksi berhasil dihapus.');
     }
 
-    private function hitungSaldo(): array
+    private function hitungSaldo(Request $request): array
     {
-        $pemasukan   = Cashflow::where('tipe_transaksi', 'Pemasukan')->sum('nominal');
-        $pengeluaran = Cashflow::where('tipe_transaksi', 'Pengeluaran')->sum('nominal');
+        $pemasukan = Cashflow::where('tipe_transaksi', 'Pemasukan')
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_transaksi', $request->bulan))
+            ->when($request->filled('tahun'), fn($q) => $q->whereYear('tanggal_transaksi', $request->tahun))
+            ->sum('nominal');
+        $pengeluaran = Cashflow::where('tipe_transaksi', 'Pengeluaran')
+            ->when($request->filled('bulan'), fn($q) => $q->whereMonth('tanggal_transaksi', $request->bulan))
+            ->when($request->filled('tahun'), fn($q) => $q->whereYear('tanggal_transaksi', $request->tahun))
+            ->sum('nominal');
 
         return [
             'pemasukan'   => $pemasukan,
