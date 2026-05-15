@@ -15,7 +15,7 @@ const BULAN = [
     ['9','September'],['10','Oktober'],['11','November'],['12','Desember'],
 ];
 
-const selectClass = 'bg-white/5 border border-white/10 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/50';
+const selectClass = 'bg-white border border-gray-300 text-[#141c25] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000]';
 
 export default function Keuangan({ cashflows, filters, saldo }) {
     const [filterBulan, setFilterBulan] = useState(filters?.bulan || '');
@@ -35,117 +35,113 @@ export default function Keuangan({ cashflows, filters, saldo }) {
     return (
         <AuthenticatedLayout>
             <Head title="Laporan Keuangan" />
-            <div className="min-h-screen bg-[#0a0a0a] text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-                    {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-2xl font-bold">Laporan Keuangan</h1>
-                        <p className="text-gray-400 text-sm mt-1">Transparansi arus kas PS. Garuda Amarta — hanya baca</p>
+            {/* Header */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-semibold text-[#141c25]">Laporan Keuangan</h1>
+                <p className="text-[#585f67] text-sm mt-0.5">Transparansi arus kas PS. Garuda Amarta — hanya baca</p>
+            </div>
+
+            {/* Saldo Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="bg-white border border-gray-200 rounded-lg p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp size={17} className="text-[#1b5e20]" />
+                        <span className="text-xs text-[#585f67] uppercase tracking-wider font-medium">Total Pemasukan</span>
                     </div>
-
-                    {/* Saldo Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5">
-                            <div className="flex items-center gap-2 mb-2">
-                                <TrendingUp size={18} className="text-emerald-400" />
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Total Pemasukan</span>
-                            </div>
-                            <p className="text-xl font-bold text-emerald-400">{formatRupiah(saldo.pemasukan)}</p>
-                        </div>
-                        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5">
-                            <div className="flex items-center gap-2 mb-2">
-                                <TrendingDown size={18} className="text-red-400" />
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Total Pengeluaran</span>
-                            </div>
-                            <p className="text-xl font-bold text-red-400">{formatRupiah(saldo.pengeluaran)}</p>
-                        </div>
-                        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Wallet size={18} className="text-white" />
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Saldo Akhir</span>
-                            </div>
-                            <p className={`text-xl font-bold ${saldo.akhir >= 0 ? 'text-white' : 'text-red-400'}`}>
-                                {formatRupiah(saldo.akhir)}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Filter */}
-                    <div className="flex flex-wrap gap-3 mb-6">
-                        <select value={filterBulan} onChange={(e) => setFilterBulan(e.target.value)} className={selectClass}>
-                            <option value="" className="bg-[#1a1a1a]">Semua Bulan</option>
-                            {BULAN.map(([v, l]) => <option key={v} value={v} className="bg-[#1a1a1a]">{l}</option>)}
-                        </select>
-                        <select value={filterTahun} onChange={(e) => setFilterTahun(e.target.value)} className={selectClass}>
-                            <option value="" className="bg-[#1a1a1a]">Semua Tahun</option>
-                            {tahunOptions.map(t => <option key={t} value={t} className="bg-[#1a1a1a]">{t}</option>)}
-                        </select>
-                    </div>
-
-                    {/* Table (read-only) */}
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-white/5 border-b border-white/10">
-                                    {['Tanggal', 'Tipe', 'Keterangan', 'Nominal', 'Dicatat Oleh'].map((h) => (
-                                        <th key={h} className={`px-6 py-4 text-xs font-medium text-gray-400 uppercase tracking-wider ${h === 'Nominal' ? 'text-right' : 'text-left'}`}>{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {cashflows.data.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="px-6 py-14 text-center text-gray-500 text-sm">
-                                            Belum ada data transaksi.
-                                        </td>
-                                    </tr>
-                                )}
-                                {cashflows.data.map((item) => (
-                                    <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                                        <td className="px-6 py-4 text-sm text-gray-300 whitespace-nowrap">{formatTanggal(item.tanggal_transaksi)}</td>
-                                        <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                item.tipe_transaksi === 'Pemasukan'
-                                                    ? 'bg-emerald-500/20 text-emerald-400'
-                                                    : 'bg-red-500/20 text-red-400'
-                                            }`}>
-                                                {item.tipe_transaksi}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-300 max-w-xs">
-                                            <span className="line-clamp-2">{item.keterangan}</span>
-                                        </td>
-                                        <td className={`px-6 py-4 text-sm font-semibold text-right whitespace-nowrap ${
-                                            item.tipe_transaksi === 'Pemasukan' ? 'text-emerald-400' : 'text-red-400'
-                                        }`}>
-                                            {item.tipe_transaksi === 'Pengeluaran' ? '−' : '+'}{formatRupiah(item.nominal)}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-gray-400">{item.bendahara?.name ?? '—'}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        {cashflows.links && cashflows.links.length > 3 && (
-                            <div className="px-6 py-4 border-t border-white/10 flex flex-wrap justify-center gap-1">
-                                {cashflows.links.map((link, i) => (
-                                    <Link
-                                        key={i}
-                                        href={link.url || '#'}
-                                        preserveScroll
-                                        className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                                            link.active ? 'bg-red-600 text-white'
-                                                : link.url ? 'bg-white/5 text-gray-400 hover:bg-white/10'
-                                                : 'bg-white/5 text-gray-600 cursor-not-allowed pointer-events-none'
-                                        }`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <p className="text-xl font-bold text-[#1b5e20]">{formatRupiah(saldo.pemasukan)}</p>
                 </div>
+                <div className="bg-white border border-gray-200 rounded-lg p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                        <TrendingDown size={17} className="text-[#b71c1c]" />
+                        <span className="text-xs text-[#585f67] uppercase tracking-wider font-medium">Total Pengeluaran</span>
+                    </div>
+                    <p className="text-xl font-bold text-[#b71c1c]">{formatRupiah(saldo.pengeluaran)}</p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg p-5">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Wallet size={17} className="text-[#141c25]" />
+                        <span className="text-xs text-[#585f67] uppercase tracking-wider font-medium">Saldo Akhir</span>
+                    </div>
+                    <p className={`text-xl font-bold ${saldo.akhir >= 0 ? 'text-[#141c25]' : 'text-[#b71c1c]'}`}>
+                        {formatRupiah(saldo.akhir)}
+                    </p>
+                </div>
+            </div>
+
+            {/* Filter */}
+            <div className="flex flex-wrap gap-3 mb-5">
+                <select value={filterBulan} onChange={(e) => setFilterBulan(e.target.value)} className={selectClass}>
+                    <option value="">Semua Bulan</option>
+                    {BULAN.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                </select>
+                <select value={filterTahun} onChange={(e) => setFilterTahun(e.target.value)} className={selectClass}>
+                    <option value="">Semua Tahun</option>
+                    {tahunOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+            </div>
+
+            {/* Table (read-only) */}
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <table className="w-full">
+                    <thead>
+                        <tr className="bg-[#2a2d2e]">
+                            {['Tanggal', 'Tipe', 'Keterangan', 'Nominal', 'Dicatat Oleh'].map((h) => (
+                                <th key={h} className={`px-6 py-4 text-xs font-medium text-white uppercase tracking-wider ${h === 'Nominal' ? 'text-right' : 'text-left'}`}>{h}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                        {cashflows.data.length === 0 && (
+                            <tr>
+                                <td colSpan={5} className="px-6 py-14 text-center text-[#585f67] text-sm">
+                                    Belum ada data transaksi.
+                                </td>
+                            </tr>
+                        )}
+                        {cashflows.data.map((item) => (
+                            <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 text-sm text-[#585f67] whitespace-nowrap">{formatTanggal(item.tanggal_transaksi)}</td>
+                                <td className="px-6 py-4">
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                                        item.tipe_transaksi === 'Pemasukan'
+                                            ? 'bg-[#e8f5e9] text-[#1b5e20]'
+                                            : 'bg-[#ffebee] text-[#b71c1c]'
+                                    }`}>
+                                        {item.tipe_transaksi}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 text-sm text-[#585f67] max-w-xs">
+                                    <span className="line-clamp-2">{item.keterangan}</span>
+                                </td>
+                                <td className={`px-6 py-4 text-sm font-semibold text-right whitespace-nowrap ${
+                                    item.tipe_transaksi === 'Pemasukan' ? 'text-[#1b5e20]' : 'text-[#b71c1c]'
+                                }`}>
+                                    {item.tipe_transaksi === 'Pengeluaran' ? '−' : '+'}{formatRupiah(item.nominal)}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-[#585f67]">{item.bendahara?.name ?? '—'}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {cashflows.links && cashflows.links.length > 3 && (
+                    <div className="px-6 py-4 border-t border-gray-100 flex flex-wrap justify-center gap-1">
+                        {cashflows.links.map((link, i) => (
+                            <Link
+                                key={i}
+                                href={link.url || '#'}
+                                preserveScroll
+                                className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                                    link.active ? 'bg-[#610000] text-white'
+                                        : link.url ? 'bg-gray-100 text-[#585f67] hover:bg-gray-200'
+                                        : 'bg-gray-100 text-gray-300 cursor-not-allowed pointer-events-none'
+                                }`}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );

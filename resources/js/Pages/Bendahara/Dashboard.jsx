@@ -1,25 +1,33 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { BookOpen, ArrowRight } from 'lucide-react';
 
 export default function Dashboard() {
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Bendahara Dashboard
-                </h2>
-            }
-        >
+        <AuthenticatedLayout>
             <Head title="Bendahara Dashboard" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            Selamat Datang, Bendahara! Kelola keuangan PS. Garuda Amarta di sini.
+            <div className="mb-6">
+                <h1 className="text-2xl font-semibold text-[#141c25]">Bendahara Dashboard</h1>
+                <p className="text-sm text-[#585f67] mt-0.5">Kelola keuangan PS. Garuda Amarta.</p>
+            </div>
+
+            <div className="max-w-sm">
+                <Link
+                    href={route('bendahara.keuangan.index')}
+                    className="group flex items-center justify-between bg-white border border-gray-200 rounded-lg p-5 hover:border-[#610000] transition-colors shadow-sm"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-[#ffebee] rounded flex items-center justify-center group-hover:bg-[#610000] transition-colors">
+                            <BookOpen size={20} className="text-[#610000] group-hover:text-white transition-colors" />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-[#141c25]">Buku Kas</p>
+                            <p className="text-sm text-[#585f67]">Catat dan kelola transaksi</p>
                         </div>
                     </div>
-                </div>
+                    <ArrowRight size={18} className="text-gray-300 group-hover:text-[#610000] transition-colors" />
+                </Link>
             </div>
         </AuthenticatedLayout>
     );

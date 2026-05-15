@@ -39,6 +39,11 @@ Route::middleware(['auth', 'verified', 'role:Super Admin'])->group(function () {
     Route::post('/admin/events', [\App\Http\Controllers\Admin\EventController::class, 'store'])->name('admin.events.store');
     Route::patch('/admin/events/{event}', [\App\Http\Controllers\Admin\EventController::class, 'update'])->name('admin.events.update');
     Route::delete('/admin/events/{event}', [\App\Http\Controllers\Admin\EventController::class, 'destroy'])->name('admin.events.destroy');
+
+    Route::get('/admin/sabuk', [\App\Http\Controllers\Admin\SabukController::class, 'index'])->name('admin.sabuk.index');
+    Route::post('/admin/sabuk', [\App\Http\Controllers\Admin\SabukController::class, 'store'])->name('admin.sabuk.store');
+    Route::patch('/admin/sabuk/{sabuk}', [\App\Http\Controllers\Admin\SabukController::class, 'update'])->name('admin.sabuk.update');
+    Route::delete('/admin/sabuk/{sabuk}', [\App\Http\Controllers\Admin\SabukController::class, 'destroy'])->name('admin.sabuk.destroy');
 });
 
 // Bendahara
