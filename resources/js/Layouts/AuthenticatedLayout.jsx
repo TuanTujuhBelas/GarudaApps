@@ -1,4 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
+import gamaLogo from '../../../public/gama.png';
 import { useState } from 'react';
 import {
     LayoutDashboard, Users, CalendarDays, Wallet, BookOpen,
@@ -31,7 +32,7 @@ function SidebarContent({ user, role, links, dashRoute }) {
         <>
             {/* Logo */}
             <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10 flex-shrink-0">
-                <img src="/gama.png" alt="Garuda Apps" className="w-9 h-9 object-contain flex-shrink-0" />
+                <img src={gamaLogo} alt="Garuda Apps" className="w-9 h-9 object-contain flex-shrink-0" />
                 <div>
                     <h1 className="text-sm font-bold text-white leading-tight">Garuda Apps</h1>
                     <p className="text-[10px] text-gray-400 leading-tight">Management Portal</p>
@@ -135,7 +136,7 @@ export default function AuthenticatedLayout({ children }) {
                     >
                         <Menu size={22} />
                     </button>
-                    <img src="/gama.png" alt="Garuda Apps" className="w-7 h-7 object-contain" />
+                    <img src={gamaLogo} alt="Garuda Apps" className="w-7 h-7 object-contain" />
                     <span className="text-sm font-semibold text-white">Garuda Apps</span>
                 </div>
 

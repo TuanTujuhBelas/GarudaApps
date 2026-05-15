@@ -3,7 +3,7 @@ import { Link, Head } from '@inertiajs/react';
 export default function Welcome({ auth }) {
     return (
         <>
-            <Head title="PS. Garuda Amarta" />
+            <Head title="GARUDA APPS" />
 
             <div className="bg-surface text-on-surface antialiased flex flex-col min-h-screen font-sans">
 
@@ -11,7 +11,7 @@ export default function Welcome({ auth }) {
                 <header className="bg-surface border-b border-outline-variant w-full z-50 sticky top-0">
                     <div className="flex justify-between items-center px-4 md:px-10 h-20 w-full max-w-[1440px] mx-auto">
                         <div className="text-xl font-bold text-primary tracking-tight">
-                            PS. Garuda Amarta
+                            GARUDA APPS
                         </div>
 
                         <nav className="hidden md:flex gap-6 h-full">
