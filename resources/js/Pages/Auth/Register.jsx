@@ -6,7 +6,7 @@ import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { User, Mail, Lock, ShieldCheck, Eye, EyeOff, Loader2, MapPin, Calendar, GraduationCap, Plus, Trash2, Users } from 'lucide-react';
 
-export default function Register({ roles, rantings }) {
+export default function Register({ roles, rantings, tingkatanSabuk }) {
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -19,6 +19,7 @@ export default function Register({ roles, rantings }) {
         tempat_lahir: '',
         tanggal_lahir: '',
         ranting_id: '',
+        sabuk_id: '',
         latihan_di: '',
         training_locations: [{ nama_lokasi: '', alamat_lokasi: '' }],
     });
@@ -57,8 +58,8 @@ export default function Register({ roles, rantings }) {
 
             <div className="w-full max-w-2xl">
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-red-700 shadow-[0_0_20px_rgba(185,28,28,0.4)] -rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <span className="text-3xl font-black text-white italic">GA</span>
+                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(185,28,28,0.4)] -rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <img src="/gama.png" alt="PS. Garuda Amarta" className="w-full h-full object-cover" />
                     </div>
                     <h2 className="text-3xl font-extrabold tracking-tight text-white">Gabung Sekarang</h2>
                     <p className="mt-2 text-gray-400">Lengkapi biodata untuk bergabung dengan keluarga PS. Garuda Amarta</p>
@@ -204,13 +205,13 @@ export default function Register({ roles, rantings }) {
                                     <div className="relative group">
                                         <InputLabel value="Tingkatan Sabuk" className="text-gray-400" />
                                         <select
-                                            value={data.ranting_id}
+                                            value={data.sabuk_id}
                                             className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all appearance-none"
-                                            onChange={(e) => setData('ranting_id', e.target.value)}
+                                            onChange={(e) => setData('sabuk_id', e.target.value)}
                                         >
                                             <option value="" className="bg-black text-white">Pilih Tingkatan</option>
-                                            {rantings.map(r => (
-                                                <option key={r.id} value={r.id} className="bg-black text-white">{r.nama_ranting}</option>
+                                            {tingkatanSabuk.map(t => (
+                                                <option key={t.id} value={t.id} className="bg-black text-white">{t.nama_sabuk}</option>
                                             ))}
                                         </select>
                                     </div>

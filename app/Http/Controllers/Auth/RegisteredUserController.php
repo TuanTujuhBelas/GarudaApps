@@ -25,6 +25,7 @@ class RegisteredUserController extends Controller
         return Inertia::render('Auth/Register', [
             'roles' => \App\Models\Role::whereIn('nama_role', ['Pelatih', 'Murid'])->get(),
             'rantings' => \App\Models\Ranting::all(),
+            'tingkatanSabuk' => \App\Models\TingkatanSabuk::orderBy('urutan')->get(),
         ]);
     }
 
@@ -47,6 +48,7 @@ class RegisteredUserController extends Controller
             'tempat_lahir' => 'nullable|string|max:100',
             'tanggal_lahir' => 'nullable|date',
             'ranting_id' => 'nullable|exists:rantings,id',
+            'sabuk_id' => 'nullable|exists:tingkatan_sabuk,id',
             'latihan_di' => 'nullable|string|max:255',
             'training_locations' => 'nullable|array|max:10',
             'training_locations.*.nama_lokasi' => 'required|string|max:255',
@@ -63,11 +65,12 @@ class RegisteredUserController extends Controller
             'tempat_lahir' => $request->tempat_lahir,
             'tanggal_lahir' => $request->tanggal_lahir,
             'ranting_id' => $request->ranting_id,
+            'sabuk_id' => $request->sabuk_id,
             'latihan_di' => $request->latihan_di,
             'is_aktif' => true,
         ]);
 
-        if ($request->has('training_locations') && is_array($request->training_locations)) {
+        if ($user->hasRole('Pelatih') && $request->has('training_locations') && is_array($request->training_locations)) {
             foreach ($request->training_locations as $loc) {
                 if (!empty($loc['nama_lokasi']) && !empty($loc['alamat_lokasi'])) {
                     $user->trainingLocations()->create([
