@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import gamaLogo from '../../../../public/gama.png';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -54,12 +55,12 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-red-900/20 via-black to-black p-4 py-12">
-            <Head title="Daftar Akun - PS Garuda Amarta" />
+            <Head title="Daftar Akun" />
 
             <div className="w-full max-w-2xl">
                 <div className="mb-8 text-center">
                     <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(185,28,28,0.4)] -rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <img src="/gama.png" alt="PS. Garuda Amarta" className="w-full h-full object-cover" />
+                        <img src={gamaLogo} alt="PS. Garuda Amarta" className="w-full h-full object-cover" />
                     </div>
                     <h2 className="text-3xl font-extrabold tracking-tight text-white">Gabung Sekarang</h2>
                     <p className="mt-2 text-gray-400">Lengkapi biodata untuk bergabung dengan keluarga PS. Garuda Amarta</p>

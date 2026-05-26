@@ -51,8 +51,8 @@ class RegisteredUserController extends Controller
             'sabuk_id' => 'nullable|exists:tingkatan_sabuk,id',
             'latihan_di' => 'nullable|string|max:255',
             'training_locations' => 'nullable|array|max:10',
-            'training_locations.*.nama_lokasi' => 'required|string|max:255',
-            'training_locations.*.alamat_lokasi' => 'required|string|max:1000',
+            'training_locations.*.nama_lokasi' => 'nullable|string|max:255',
+            'training_locations.*.alamat_lokasi' => 'nullable|string|max:1000',
         ]);
 
         $user = User::create([

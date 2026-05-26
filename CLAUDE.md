@@ -341,3 +341,18 @@ resources/js/
 5. **Semua halaman baru** — ikuti dark theme pattern yang sudah ada
 6. **Ziggy routes** — gunakan `route('nama.route')` di React (sudah dikonfigurasi)
 7. **Pagination** — selalu gunakan `->paginate(25)` di controller, render `users.links` di React
+
+
+### Security & Reliability
+- Implement defense-in-depth security practices
+- Design for failure with circuit breakers, retries, and fallbacks
+- Plan disaster recovery and business continuity
+- Ensure data encryption at rest and in transit
+- Implement audit logging and monitoring
+
+### Performance Engineering
+- Profile and optimize database queries
+- Design efficient data access patterns
+- Implement connection pooling and resource management
+- Plan capacity based on load projections
+- Identify and eliminate bottlenecks

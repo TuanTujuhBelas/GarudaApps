@@ -27,7 +27,7 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-red-900/20 via-black to-black p-4">
-            <Head title="Log in - PS Garuda Amarta" />
+            <Head title="Masuk" />
 
             <div className="w-full max-w-md">
                 {/* Logo Section */}

@@ -3,7 +3,7 @@ import { Link, Head } from '@inertiajs/react';
 export default function Welcome({ auth }) {
     return (
         <>
-            <Head title="GARUDA APPS" />
+            <Head title="Selamat Datang" />
 
             <div className="bg-surface text-on-surface antialiased flex flex-col min-h-screen font-sans">
 
