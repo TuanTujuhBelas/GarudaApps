@@ -8,7 +8,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import InputLabel from '@/Components/InputLabel';
 
-export default function Index({ users, roles, rantings, filters, stats }) {
+export default function Index({ users, roles, rantings, tingkatansabuks, filters, stats }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
@@ -32,6 +32,7 @@ export default function Index({ users, roles, rantings, filters, stats }) {
 
     const { data, setData, patch, processing, reset, delete: destroy } = useForm({
         role_id: '',
+        sabuk_id: '',
         ranting_id: '',
         is_aktif: true,
     });
@@ -40,6 +41,7 @@ export default function Index({ users, roles, rantings, filters, stats }) {
         setEditingUser(user);
         setData({
             role_id: user.role_id,
+            sabuk_id: user.sabuk_id || '',
             ranting_id: user.ranting_id || '',
             is_aktif: !!user.is_aktif,
         });
@@ -151,7 +153,7 @@ export default function Index({ users, roles, rantings, filters, stats }) {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className="text-sm text-[#585f67]">
-                                            {user.ranting?.nama_ranting || '-'}
+                                            {user.tingkatan_sabuk?.nama_sabuk ?? '-'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -249,16 +251,16 @@ export default function Index({ users, roles, rantings, filters, stats }) {
                         </div>
 
                         <div>
-                            <InputLabel htmlFor="ranting_id" value="Tingkatan Sabuk" className="text-[#585f67]" />
+                            <InputLabel htmlFor="sabuk_id" value="Tingkatan Sabuk" className="text-[#585f67]" />
                             <select
-                                id="ranting_id"
-                                value={data.ranting_id}
+                                id="sabuk_id"
+                                value={data.sabuk_id}
                                 className="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 text-[#141c25] rounded-lg focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000] appearance-none text-sm"
-                                onChange={(e) => setData('ranting_id', e.target.value)}
+                                onChange={(e) => setData('sabuk_id', e.target.value)}
                             >
                                 <option value="">- Pilih Tingkatan -</option>
-                                {rantings.map(r => (
-                                    <option key={r.id} value={r.id}>{r.nama_ranting}</option>
+                                {tingkatansabuks.map(t => (
+                                    <option key={t.id} value={t.id}>{t.nama_sabuk}</option>
                                 ))}
                             </select>
                         </div>

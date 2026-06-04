@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Ranting;
+use App\Models\TingkatanSabuk;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['role', 'ranting']);
+        $query = User::with(['role', 'ranting', 'tingkatanSabuk']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -24,10 +25,11 @@ class UserController extends Controller
         }
 
         return Inertia::render('Admin/Users/Index', [
-            'users'    => $query->paginate(25)->withQueryString(),
-            'roles'    => Role::all(),
-            'rantings' => Ranting::all(),
-            'filters'  => $request->only('search'),
+            'users'           => $query->paginate(25)->withQueryString(),
+            'roles'           => Role::all(),
+            'rantings'        => Ranting::all(),
+            'tingkatansabuks' => TingkatanSabuk::orderBy('urutan')->get(),
+            'filters'         => $request->only('search'),
             'stats'    => [
                 'total' => User::count(),
                 'aktif' => User::where('is_aktif', true)->count(),
@@ -38,9 +40,10 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'role_id'   => 'required|exists:roles,id',
+            'role_id'    => 'required|exists:roles,id',
             'ranting_id' => 'nullable|exists:rantings,id',
-            'is_aktif'  => 'required|boolean',
+            'sabuk_id'   => 'nullable|exists:tingkatan_sabuk,id',
+            'is_aktif'   => 'required|boolean',
         ]);
 
         if ($user->role?->nama_role === 'Super Admin') {
@@ -50,6 +53,7 @@ class UserController extends Controller
         $user->update([
             'role_id'    => $request->role_id,
             'ranting_id' => $request->ranting_id ?: null,
+            'sabuk_id'   => $request->sabuk_id ?: null,
             'is_aktif'   => $request->is_aktif,
         ]);
 

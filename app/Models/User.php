@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->belongsTo(Ranting::class);
     }
 
+    public function tingkatanSabuk()
+    {
+        return $this->belongsTo(TingkatanSabuk::class, 'sabuk_id');
+    }
+
     public function trainingLocations()
     {
         return $this->hasMany(UserTrainingLocation::class);
