@@ -25,6 +25,7 @@ class EventController extends Controller
                     'nama_acara'          => $event->nama_acara,
                     'tanggal_pelaksanaan' => $event->tanggal_pelaksanaan->format('Y-m-d'),
                     'deskripsi'           => $event->deskripsi,
+                    'is_past'             => $event->tanggal_pelaksanaan->isPast(),
                     'registrasi'          => $reg ? [
                         'id'     => $reg->id,
                         'status' => $reg->status,
@@ -39,6 +40,8 @@ class EventController extends Controller
 
     public function daftar(Request $request, Event $event)
     {
+        abort_if($event->tanggal_pelaksanaan->isPast(), 422, 'Pendaftaran sudah ditutup untuk acara ini.');
+
         $request->validate([
             'file_berkas' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
@@ -46,6 +49,10 @@ class EventController extends Controller
         $existing = EventRegistration::where('event_id', $event->id)
             ->where('murid_id', auth()->id())
             ->first();
+
+        if ($existing && $existing->status === 'ACC') {
+            return redirect()->back()->with('error', 'Berkas Anda sudah disetujui dan tidak dapat diubah.');
+        }
 
         $path = $request->file('file_berkas')->store('berkas', 'public');
 

@@ -56,6 +56,7 @@ export default function Events({ events }) {
                     const isDitolak  = reg?.status === 'Ditolak';
                     const isMenunggu = reg?.status === 'Menunggu';
                     const isACC      = reg?.status === 'ACC';
+                    const isPast     = event.is_past;
 
                     return (
                         <div key={event.id} className="bg-white border border-gray-200 rounded-lg p-5 hover:border-[#610000]/30 transition-colors shadow-sm">
@@ -90,7 +91,7 @@ export default function Events({ events }) {
 
                                 {/* Action Button */}
                                 <div className="shrink-0">
-                                    {!reg && (
+                                    {!reg && !isPast && (
                                         <button
                                             onClick={() => openUpload(event)}
                                             className="flex items-center gap-2 bg-[#610000] hover:bg-[#7a0000] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -99,7 +100,10 @@ export default function Events({ events }) {
                                             Daftar
                                         </button>
                                     )}
-                                    {isDitolak && (
+                                    {!reg && isPast && (
+                                        <span className="text-xs text-[#585f67] italic">Pendaftaran ditutup</span>
+                                    )}
+                                    {isDitolak && !isPast && (
                                         <button
                                             onClick={() => openUpload(event)}
                                             className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -107,6 +111,9 @@ export default function Events({ events }) {
                                             <RefreshCw size={14} />
                                             Upload Ulang
                                         </button>
+                                    )}
+                                    {isDitolak && isPast && (
+                                        <span className="text-xs text-[#585f67] italic">Pendaftaran ditutup</span>
                                     )}
                                     {isMenunggu && (
                                         <span className="text-xs text-[#585f67] italic">Menunggu review</span>

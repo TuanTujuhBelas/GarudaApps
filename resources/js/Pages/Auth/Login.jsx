@@ -6,7 +6,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react'; // Pastikan install lucide-react
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({ status, error, canResetPassword }) {
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -43,6 +43,11 @@ export default function Login({ status, canResetPassword }) {
 
                 <div className="overflow-hidden rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-2xl">
                     <div className="p-8">
+                        {error && (
+                            <div className="mb-6 rounded-xl bg-red-500/10 p-4 text-sm font-medium text-red-400 border border-red-500/20">
+                                {error}
+                            </div>
+                        )}
                         {status && (
                             <div className="mb-6 rounded-xl bg-emerald-500/10 p-4 text-sm font-medium text-emerald-400 border border-emerald-500/20">
                                 {status}

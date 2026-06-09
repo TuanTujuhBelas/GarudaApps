@@ -39,6 +39,8 @@ class VerifikasiController extends Controller
 
     public function update(Request $request, EventRegistration $registration)
     {
+        abort_if($registration->status !== 'Menunggu', 422, 'Berkas ini sudah diverifikasi sebelumnya.');
+
         $request->validate([
             'status' => 'required|in:ACC,Ditolak',
         ]);

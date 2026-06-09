@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -10,6 +11,14 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+
+        if (!$user->is_aktif) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login')->with('error', 'Akun Anda telah dinonaktifkan. Hubungi administrator.');
+        }
+
         $role = $user->role?->nama_role;
 
         switch ($role) {

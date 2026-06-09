@@ -67,7 +67,7 @@ export default function Welcome({ auth }) {
                                 Disiplin. Kehormatan. Ketepatan.
                             </h1>
                             <p className="text-lg text-secondary leading-relaxed">
-                                Bergabunglah dengan institusi yang berdedikasi pada studi bela diri yang ketat. Kami menempa ketahanan fisik dan mental melalui metodologi yang teruji waktu.
+                                Bergabunglah dengan Perguruan yang berdedikasi pada studi bela diri yang ketat. Kami menempa ketahanan fisik dan mental melalui metodologi yang teruji waktu.
                             </p>
                             {!auth.user && (
                                 <div className="flex gap-3 pt-1">
@@ -86,12 +86,11 @@ export default function Welcome({ auth }) {
                                 </div>
                             )}
                         </div>
-                        <div className="md:col-span-7 h-[480px] bg-surface-container-high rounded border border-outline-variant overflow-hidden">
-                            <img
-                                className="w-full h-full object-cover grayscale opacity-90 mix-blend-multiply"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuALnOMEH-KZNmcQq8roRt2u0DboYGW07yVSB8MZcHYykbUona_2ukLRx5b_0shR488SFe8FnJVT2gd4waJbErAdHK4cDGIbymoY5bD7LU1xy2LyGB_zGBNTYOmlc09vuqgeWBxaVRPY488PQIsbEQ4TrceSvDR71Dvdu273tcWJpZWwThS05raZoPADU8QgGooaD8BJBTJ0bWVOPrmFdCt2074a7kuJmR-lzjZ3mtgZmnU3NOKyM1iTDul_IMGZ-JW3gkWnVion_w"
-                                alt="Latihan Pencak Silat Garuda Amarta"
-                            />
+                        <div className="md:col-span-7 h-[480px] bg-surface-container-high rounded border border-outline-variant overflow-hidden flex flex-col items-center justify-center gap-4 select-none">
+                            <span className="material-symbols-outlined text-primary" style={{ fontSize: 96, opacity: 0.15 }}>
+                                sports_martial_arts
+                            </span>
+                            <p className="font-mono text-xs text-primary/30 uppercase tracking-widest">PS. Garuda Amarta</p>
                         </div>
                     </section>
 

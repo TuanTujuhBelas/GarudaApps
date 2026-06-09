@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(Get-ChildItem -Recurse -Filter \"*.php\")",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\abhim\\\\Documents\\\\GARUDA AMARTA\\\\garuda-app\" -Recurse -Directory)",
+      "Bash(Sort-Object)"
     ]
   }
 }
