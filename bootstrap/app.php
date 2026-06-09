@@ -26,7 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role'        => \App\Http\Middleware\RoleMiddleware::class,
+            'murid.aktif' => \App\Http\Middleware\MuridAktifMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

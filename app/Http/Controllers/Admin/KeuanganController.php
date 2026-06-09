@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cashflow;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -55,13 +56,15 @@ class KeuanganController extends Controller
             'tanggal_transaksi' => 'required|date',
         ]);
 
-        Cashflow::create([
+        $cashflow = Cashflow::create([
             'bendahara_id'      => auth()->id(),
             'tipe_transaksi'    => $request->tipe_transaksi,
             'nominal'           => $request->nominal,
             'keterangan'        => $request->keterangan,
             'tanggal_transaksi' => $request->tanggal_transaksi,
         ]);
+
+        ActivityLogger::log('create_cashflow', "Transaksi {$request->tipe_transaksi} Rp " . number_format($request->nominal, 0, ',', '.') . " dicatat", 'Cashflow', $cashflow->id);
 
         return redirect()->back()->with('message', 'Transaksi berhasil dicatat.');
     }
@@ -77,11 +80,15 @@ class KeuanganController extends Controller
 
         $cashflow->update($request->only(['tipe_transaksi', 'nominal', 'keterangan', 'tanggal_transaksi']));
 
+        ActivityLogger::log('update_cashflow', "Transaksi #{$cashflow->id} diperbarui", 'Cashflow', $cashflow->id);
+
         return redirect()->back()->with('message', 'Transaksi berhasil diperbarui.');
     }
 
     public function destroy(Cashflow $cashflow)
     {
+        ActivityLogger::log('delete_cashflow', "Transaksi #{$cashflow->id} ({$cashflow->tipe_transaksi} Rp " . number_format($cashflow->nominal, 0, ',', '.') . ") dihapus", 'Cashflow', $cashflow->id);
+
         $cashflow->delete();
 
         return redirect()->back()->with('message', 'Transaksi berhasil dihapus.');

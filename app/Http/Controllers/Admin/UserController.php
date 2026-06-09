@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Role;
-use App\Models\Ranting;
-use App\Models\TingkatanSabuk;
+use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -14,7 +13,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['role', 'ranting', 'tingkatanSabuk']);
+        $query = User::with(['role', 'pelatih.ranting', 'murid.ranting']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -24,15 +23,37 @@ class UserController extends Controller
             });
         }
 
+        $users = $query->paginate(25)->withQueryString();
+
+        $mapped = $users->through(fn ($u) => [
+            'id'       => $u->id,
+            'name'     => $u->name,
+            'email'    => $u->email,
+            'is_aktif' => $u->is_aktif,
+            'role'     => $u->role ? ['id' => $u->role->id, 'nama_role' => $u->role->nama_role] : null,
+            'role_id'  => $u->role_id,
+            'profil'   => match ($u->role?->nama_role) {
+                'Pelatih' => $u->pelatih ? [
+                    'nomor_anggota' => $u->pelatih->nomor_anggota,
+                    'ranting'       => $u->pelatih->ranting?->nama_ranting,
+                ] : null,
+                'Murid' => $u->murid ? [
+                    'nomor_anggota'     => $u->murid->nomor_anggota,
+                    'ranting'           => $u->murid->ranting?->nama_ranting,
+                    'status_verifikasi' => $u->murid->status_verifikasi,
+                ] : null,
+                default => null,
+            },
+        ]);
+
         return Inertia::render('Admin/Users/Index', [
-            'users'           => $query->paginate(25)->withQueryString(),
-            'roles'           => Role::all(),
-            'rantings'        => Ranting::all(),
-            'tingkatansabuks' => TingkatanSabuk::orderBy('urutan')->get(),
-            'filters'         => $request->only('search'),
-            'stats'    => [
-                'total' => User::count(),
-                'aktif' => User::where('is_aktif', true)->count(),
+            'users'   => $mapped,
+            'roles'   => Role::all(),
+            'filters' => $request->only('search'),
+            'stats'   => [
+                'total'    => User::count(),
+                'aktif'    => User::where('is_aktif', true)->count(),
+                'menunggu' => \App\Models\Murid::where('status_verifikasi', 'Menunggu')->count(),
             ],
         ]);
     }
@@ -40,10 +61,8 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'role_id'    => 'required|exists:roles,id',
-            'ranting_id' => 'nullable|exists:rantings,id',
-            'sabuk_id'   => 'nullable|exists:tingkatan_sabuk,id',
-            'is_aktif'   => 'required|boolean',
+            'role_id'  => 'required|exists:roles,id',
+            'is_aktif' => 'required|boolean',
         ]);
 
         if ($user->role?->nama_role === 'Super Admin') {
@@ -51,11 +70,11 @@ class UserController extends Controller
         }
 
         $user->update([
-            'role_id'    => $request->role_id,
-            'ranting_id' => $request->ranting_id ?: null,
-            'sabuk_id'   => $request->sabuk_id ?: null,
-            'is_aktif'   => $request->is_aktif,
+            'role_id'  => $request->role_id,
+            'is_aktif' => $request->is_aktif,
         ]);
+
+        ActivityLogger::log('update_user', "Data user {$user->name} diperbarui", 'User', $user->id);
 
         return redirect()->back()->with('message', 'User berhasil diperbarui.');
     }
@@ -69,6 +88,8 @@ class UserController extends Controller
         if ($user->role?->nama_role === 'Super Admin') {
             return redirect()->back()->with('error', 'Akun Super Admin tidak dapat dihapus.');
         }
+
+        ActivityLogger::log('delete_user', "User {$user->name} dihapus", 'User', $user->id);
 
         $user->delete();
 

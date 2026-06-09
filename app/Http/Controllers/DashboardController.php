@@ -24,16 +24,39 @@ class DashboardController extends Controller
         switch ($role) {
             case 'Super Admin':
                 return Inertia::render('Admin/Dashboard');
+
             case 'Bendahara':
                 return Inertia::render('Bendahara/Dashboard');
+
             case 'Pelatih':
                 return Inertia::render('Pelatih/Dashboard');
+
             case 'Murid':
-                // Memuat data ranting sesuai FSD FR-02
-                $user->load('ranting');
+                $murid = $user->murid()->with('ranting')->first();
+
+                if (!$murid) {
+                    return Inertia::render('Murid/Dashboard', [
+                        'murid'   => null,
+                        'pending' => true,
+                    ]);
+                }
+
                 return Inertia::render('Murid/Dashboard', [
-                    'user' => $user
+                    'murid'   => [
+                        'nama'             => $user->name,
+                        'email'            => $user->email,
+                        'nomor_anggota'    => $murid->nomor_anggota,
+                        'ranting'          => $murid->ranting?->nama_ranting,
+                        'status_verifikasi' => $murid->status_verifikasi,
+                        'tempat_lahir'     => $murid->tempat_lahir,
+                        'tanggal_lahir'    => $murid->tanggal_lahir?->format('Y-m-d'),
+                        'nomor_hp'         => $murid->nomor_hp,
+                        'alasan_mendaftar' => $murid->alasan_mendaftar,
+                        'disetujui_pada'   => $murid->disetujui_pada?->format('Y-m-d'),
+                    ],
+                    'pending' => $murid->isMenunggu(),
                 ]);
+
             default:
                 return Inertia::render('Dashboard');
         }

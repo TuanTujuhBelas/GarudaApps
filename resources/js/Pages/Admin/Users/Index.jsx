@@ -1,14 +1,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
-import { User, Mail, Shield, Trash2, Edit2, Search, X, Check } from 'lucide-react';
+import { User, Mail, Shield, Trash2, Edit2, Search, X, Check, Clock } from 'lucide-react';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import InputLabel from '@/Components/InputLabel';
 
-export default function Index({ users, roles, rantings, tingkatansabuks, filters, stats }) {
+export default function Index({ users, roles, filters, stats }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
@@ -32,8 +32,6 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
 
     const { data, setData, patch, processing, reset, delete: destroy } = useForm({
         role_id: '',
-        sabuk_id: '',
-        ranting_id: '',
         is_aktif: true,
     });
 
@@ -41,8 +39,6 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
         setEditingUser(user);
         setData({
             role_id: user.role_id,
-            sabuk_id: user.sabuk_id || '',
-            ranting_id: user.ranting_id || '',
             is_aktif: !!user.is_aktif,
         });
     };
@@ -69,6 +65,42 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
         });
     };
 
+    const getAnggotaStatusCell = (user) => {
+        const roleName = user.role?.nama_role;
+        if (roleName === 'Pelatih') {
+            return (
+                <span className="text-sm text-[#585f67] font-mono">
+                    {user.profil?.nomor_anggota ?? '-'}
+                </span>
+            );
+        }
+        if (roleName === 'Murid') {
+            const status = user.profil?.status_verifikasi;
+            const statusClass = {
+                'Menunggu': 'bg-orange-100 text-orange-700',
+                'Aktif':    'bg-emerald-100 text-emerald-700',
+                'Ditolak':  'bg-red-100 text-red-700',
+            }[status] ?? 'bg-gray-100 text-gray-500';
+
+            return (
+                <div className="space-y-1">
+                    {user.profil?.nomor_anggota && (
+                        <p className="text-xs font-mono text-[#585f67]">{user.profil.nomor_anggota}</p>
+                    )}
+                    {status && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+                            {status === 'Menunggu' && <Clock size={10} />}
+                            {status === 'Aktif' && <Check size={10} />}
+                            {status === 'Ditolak' && <X size={10} />}
+                            {status}
+                        </span>
+                    )}
+                </div>
+            );
+        }
+        return <span className="text-sm text-gray-300">-</span>;
+    };
+
     const userList = users.data;
 
     return (
@@ -92,6 +124,12 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
                         <p className="text-xs text-[#b71c1c] uppercase font-medium tracking-wider">Aktif</p>
                         <p className="text-xl font-bold text-[#b71c1c]">{stats.aktif}</p>
                     </div>
+                    {stats.menunggu > 0 && (
+                        <div className="bg-orange-50 px-4 py-2 rounded border border-orange-200 text-center">
+                            <p className="text-xs text-orange-700 uppercase font-medium tracking-wider">Menunggu</p>
+                            <p className="text-xl font-bold text-orange-700">{stats.menunggu}</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -119,8 +157,8 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
                             <tr className="bg-[#2a2d2e] text-white text-xs uppercase tracking-wider font-medium">
                                 <th className="px-6 py-4">Pengguna</th>
                                 <th className="px-6 py-4">Role</th>
-                                <th className="px-6 py-4">Tingkatan</th>
-                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4">No. Anggota / Status</th>
+                                <th className="px-6 py-4">Status Akun</th>
                                 <th className="px-6 py-4 text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -139,6 +177,9 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
                                                 <p className="text-xs text-[#585f67] flex items-center gap-1 mt-0.5">
                                                     <Mail size={11} /> {user.email}
                                                 </p>
+                                                {(user.role?.nama_role === 'Pelatih' || user.role?.nama_role === 'Murid') && user.profil?.ranting && (
+                                                    <p className="text-xs text-gray-400 mt-0.5">{user.profil.ranting}</p>
+                                                )}
                                             </div>
                                         </div>
                                     </td>
@@ -146,15 +187,14 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
                                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
                                             user.role?.nama_role === 'Super Admin' ? 'bg-[#f3e5f5] text-[#6a1b9a]' :
                                             user.role?.nama_role === 'Pelatih'     ? 'bg-[#e3f2fd] text-[#0d47a1]' :
+                                            user.role?.nama_role === 'Bendahara'   ? 'bg-[#e8f5e9] text-[#1b5e20]' :
                                                                                      'bg-[#fff3e0] text-[#e65100]'
                                         }`}>
                                             <Shield size={11} /> {user.role?.nama_role ?? '-'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-sm text-[#585f67]">
-                                            {user.tingkatan_sabuk?.nama_sabuk ?? '-'}
-                                        </span>
+                                        {getAnggotaStatusCell(user)}
                                     </td>
                                     <td className="px-6 py-4">
                                         {user.is_aktif ? (
@@ -248,21 +288,6 @@ export default function Index({ users, roles, rantings, tingkatansabuks, filters
                             {isSuperAdmin(editingUser) && (
                                 <p className="mt-1 text-xs text-[#b71c1c]">Role Super Admin tidak dapat diubah.</p>
                             )}
-                        </div>
-
-                        <div>
-                            <InputLabel htmlFor="sabuk_id" value="Tingkatan Sabuk" className="text-[#585f67]" />
-                            <select
-                                id="sabuk_id"
-                                value={data.sabuk_id}
-                                className="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 text-[#141c25] rounded-lg focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000] appearance-none text-sm"
-                                onChange={(e) => setData('sabuk_id', e.target.value)}
-                            >
-                                <option value="">- Pilih Tingkatan -</option>
-                                {tingkatansabuks.map(t => (
-                                    <option key={t.id} value={t.id}>{t.nama_sabuk}</option>
-                                ))}
-                            </select>
                         </div>
 
                         <div className="flex items-center gap-2">

@@ -5,9 +5,9 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { User, Mail, Lock, ShieldCheck, Eye, EyeOff, Loader2, MapPin, Calendar, GraduationCap, Plus, Trash2, Users } from 'lucide-react';
+import { User, Mail, Lock, ShieldCheck, Eye, EyeOff, Loader2, MapPin, Calendar, GraduationCap, Plus, Trash2, Users, Phone, HelpCircle } from 'lucide-react';
 
-export default function Register({ roles, rantings, tingkatanSabuk }) {
+export default function Register({ roles, rantings }) {
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -20,8 +20,10 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
         tempat_lahir: '',
         tanggal_lahir: '',
         ranting_id: '',
-        sabuk_id: '',
-        latihan_di: '',
+        nomor_hp: '',
+        pernah_beladiri: false,
+        jenis_beladiri: '',
+        alasan_mendaftar: '',
         training_locations: [{ nama_lokasi: '', alamat_lokasi: '' }],
     });
 
@@ -203,18 +205,43 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
                             {/* Conditional Fields: Pelatih */}
                             {selectedRole === 'Pelatih' && (
                                 <div className="space-y-6 pt-4 border-t border-white/10">
-                                    <div className="relative group">
-                                        <InputLabel value="Tingkatan Sabuk" className="text-gray-400" />
-                                        <select
-                                            value={data.sabuk_id}
-                                            className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all appearance-none"
-                                            onChange={(e) => setData('sabuk_id', e.target.value)}
-                                        >
-                                            <option value="" className="bg-black text-white">Pilih Tingkatan</option>
-                                            {tingkatanSabuk.map(t => (
-                                                <option key={t.id} value={t.id} className="bg-black text-white">{t.nama_sabuk}</option>
-                                            ))}
-                                        </select>
+                                    <h3 className="text-sm font-bold text-red-500 uppercase tracking-wider">Data Pelatih</h3>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Ranting Pelatih */}
+                                        <div className="relative group">
+                                            <InputLabel value="Ranting" className="text-gray-400" />
+                                            <select
+                                                value={data.ranting_id}
+                                                className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all appearance-none"
+                                                onChange={(e) => setData('ranting_id', e.target.value)}
+                                            >
+                                                <option value="" className="bg-black text-white">Pilih Ranting</option>
+                                                {rantings.map(r => (
+                                                    <option key={r.id} value={r.id} className="bg-black text-white">
+                                                        {r.kode ? `[${r.kode}] ` : ''}{r.nama_ranting}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <InputError message={errors.ranting_id} className="mt-1" />
+                                        </div>
+
+                                        {/* Nomor HP Pelatih */}
+                                        <div className="relative group">
+                                            <InputLabel value="Nomor HP" className="text-gray-400" />
+                                            <div className="relative mt-1">
+                                                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-red-500 transition-colors">
+                                                    <Phone size={18} />
+                                                </div>
+                                                <TextInput
+                                                    value={data.nomor_hp}
+                                                    className="block w-full pl-11 pr-4 py-3 bg-white/5 border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all"
+                                                    placeholder="08xxxxxxxxxx"
+                                                    onChange={(e) => setData('nomor_hp', e.target.value)}
+                                                />
+                                            </div>
+                                            <InputError message={errors.nomor_hp} className="mt-1" />
+                                        </div>
                                     </div>
 
                                     <div className="space-y-4">
@@ -261,27 +288,104 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
                             {/* Conditional Fields: Murid */}
                             {selectedRole === 'Murid' && (
                                 <div className="space-y-6 pt-4 border-t border-white/10">
-                                    <div className="relative group">
-                                        <InputLabel value="Latihan Di Mana?" className="text-gray-400" />
-                                        <TextInput
-                                            value={data.latihan_di}
-                                            className="mt-1 block w-full bg-white/5 border-white/10"
-                                            placeholder="Nama Ranting tempat latihan Anda"
-                                            onChange={(e) => setData('latihan_di', e.target.value)}
-                                        />
+                                    <h3 className="text-sm font-bold text-red-500 uppercase tracking-wider">Data Murid</h3>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Daftar di Ranting */}
+                                        <div className="relative group">
+                                            <InputLabel value="Daftar di Ranting" className="text-gray-400" />
+                                            <select
+                                                value={data.ranting_id}
+                                                className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all appearance-none"
+                                                onChange={(e) => setData('ranting_id', e.target.value)}
+                                            >
+                                                <option value="" className="bg-black text-white">Pilih Ranting</option>
+                                                {rantings.map(r => (
+                                                    <option key={r.id} value={r.id} className="bg-black text-white">
+                                                        {r.kode ? `[${r.kode}] ` : ''}{r.nama_ranting}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <InputError message={errors.ranting_id} className="mt-1" />
+                                        </div>
+
+                                        {/* Nomor HP */}
+                                        <div className="relative group">
+                                            <InputLabel value="Nomor HP" className="text-gray-400" />
+                                            <div className="relative mt-1">
+                                                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-red-500 transition-colors">
+                                                    <Phone size={18} />
+                                                </div>
+                                                <TextInput
+                                                    value={data.nomor_hp}
+                                                    className="block w-full pl-11 pr-4 py-3 bg-white/5 border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all"
+                                                    placeholder="08xxxxxxxxxx"
+                                                    onChange={(e) => setData('nomor_hp', e.target.value)}
+                                                />
+                                            </div>
+                                            <InputError message={errors.nomor_hp} className="mt-1" />
+                                        </div>
                                     </div>
+
+                                    {/* Pernah Ikut Beladiri? */}
                                     <div className="relative group">
-                                        <InputLabel value="Tingkatan Sabuk Saat Ini" className="text-gray-400" />
-                                        <select
-                                            value={data.ranting_id}
-                                            className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all appearance-none"
-                                            onChange={(e) => setData('ranting_id', e.target.value)}
-                                        >
-                                            <option value="" className="bg-black text-white">Pilih Tingkatan</option>
-                                            {rantings.map(r => (
-                                                <option key={r.id} value={r.id} className="bg-black text-white">{r.nama_ranting}</option>
-                                            ))}
-                                        </select>
+                                        <InputLabel value="Pernah Ikut Beladiri?" className="text-gray-400" />
+                                        <div className="mt-2 flex items-center gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setData('pernah_beladiri', true)}
+                                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                                                    data.pernah_beladiri
+                                                        ? 'bg-red-600 border-red-500 text-white'
+                                                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                                }`}
+                                            >
+                                                Ya
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setData('pernah_beladiri', false); setData('jenis_beladiri', ''); }}
+                                                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium border transition-all ${
+                                                    !data.pernah_beladiri
+                                                        ? 'bg-red-600 border-red-500 text-white'
+                                                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                                                }`}
+                                            >
+                                                Tidak
+                                            </button>
+                                        </div>
+                                        <InputError message={errors.pernah_beladiri} className="mt-1" />
+                                    </div>
+
+                                    {/* Jenis Beladiri - hanya tampil jika pernah_beladiri = true */}
+                                    {data.pernah_beladiri && (
+                                        <div className="relative group">
+                                            <InputLabel value="Jenis Beladiri / Perguruan" className="text-gray-400" />
+                                            <div className="relative mt-1">
+                                                <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-500 group-focus-within:text-red-500 transition-colors">
+                                                    <HelpCircle size={18} />
+                                                </div>
+                                                <TextInput
+                                                    value={data.jenis_beladiri}
+                                                    className="block w-full pl-11 pr-4 py-3 bg-white/5 border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all"
+                                                    placeholder="Contoh: Karate, Taekwondo, Pencak Silat lain"
+                                                    onChange={(e) => setData('jenis_beladiri', e.target.value)}
+                                                />
+                                            </div>
+                                            <InputError message={errors.jenis_beladiri} className="mt-1" />
+                                        </div>
+                                    )}
+
+                                    {/* Alasan Mendaftar */}
+                                    <div className="relative group">
+                                        <InputLabel value="Alasan Mendaftar" className="text-gray-400" />
+                                        <textarea
+                                            value={data.alasan_mendaftar}
+                                            className="mt-1 block w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-xl focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all min-h-[100px]"
+                                            placeholder="Ceritakan alasan Anda ingin bergabung dengan PS. Garuda Amarta"
+                                            onChange={(e) => setData('alasan_mendaftar', e.target.value)}
+                                        />
+                                        <InputError message={errors.alasan_mendaftar} className="mt-1" />
                                     </div>
                                 </div>
                             )}
@@ -335,8 +439,8 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
                             </div>
 
                             <div className="pt-4">
-                                <PrimaryButton 
-                                    className="relative w-full flex justify-center items-center gap-2 rounded-xl bg-red-600 py-4 text-sm font-bold uppercase tracking-widest hover:bg-red-700 active:scale-[0.98] transition-all shadow-lg shadow-red-600/20" 
+                                <PrimaryButton
+                                    className="relative w-full flex justify-center items-center gap-2 rounded-xl bg-red-600 py-4 text-sm font-bold uppercase tracking-widest hover:bg-red-700 active:scale-[0.98] transition-all shadow-lg shadow-red-600/20"
                                     disabled={processing}
                                 >
                                     {processing ? (
@@ -361,7 +465,7 @@ export default function Register({ roles, rantings, tingkatanSabuk }) {
                         </p>
                     </div>
                 </div>
-                
+
                 <p className="mt-8 text-center text-xs text-gray-600 uppercase tracking-[0.2em]">
                     &copy; 2024 PS. Garuda Amarta
                 </p>

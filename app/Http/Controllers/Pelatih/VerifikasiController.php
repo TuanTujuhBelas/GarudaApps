@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pelatih;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -46,6 +47,8 @@ class VerifikasiController extends Controller
         ]);
 
         $registration->update(['status' => $request->status]);
+
+        ActivityLogger::log('verify_berkas', "Berkas murid untuk event diubah statusnya menjadi {$request->status}", 'EventRegistration', $registration->id);
 
         return redirect()->back()->with('message', 'Status berkas berhasil diperbarui.');
     }

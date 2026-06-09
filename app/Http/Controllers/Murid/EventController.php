@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Murid;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -75,6 +76,8 @@ class EventController extends Controller
             Storage::disk('public')->delete($path);
             throw $e;
         }
+
+        ActivityLogger::log('upload_berkas', auth()->user()->name . " mengunggah berkas untuk acara '{$event->nama_acara}'", 'EventRegistration', null);
 
         return redirect()->back()->with('message', 'Berkas berhasil dikirim, menunggu verifikasi.');
     }
