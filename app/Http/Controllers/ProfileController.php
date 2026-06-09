@@ -14,9 +14,6 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): Response|RedirectResponse
     {
         if (! $request->user()->is_aktif) {
@@ -26,9 +23,36 @@ class ProfileController extends Controller
             return Redirect::route('login')->with('error', 'Akun Anda telah dinonaktifkan. Hubungi administrator.');
         }
 
+        $user     = $request->user();
+        $roleName = $user->role?->nama_role;
+        $profil   = null;
+
+        if ($roleName === 'Murid') {
+            $murid  = $user->murid()->with('ranting')->first();
+            $profil = $murid ? [
+                'foto'              => $murid->foto,
+                'nomor_anggota'     => $murid->nomor_anggota,
+                'ranting'           => $murid->ranting?->nama_ranting,
+                'status_verifikasi' => $murid->status_verifikasi,
+            ] : null;
+        } elseif ($roleName === 'Pelatih') {
+            $pelatih = $user->pelatih()->with(['ranting', 'tingkatanSabuk'])->first();
+            $profil  = $pelatih ? [
+                'foto'          => $pelatih->foto,
+                'nomor_anggota' => $pelatih->nomor_anggota,
+                'ranting'       => $pelatih->ranting?->nama_ranting,
+                'gelar'         => $pelatih->gelar,
+                'sabuk'         => $pelatih->tingkatanSabuk?->nama_sabuk,
+            ] : null;
+        }
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
+            'status'          => session('status'),
+            'message'         => session('message'),
+            'error'           => session('error'),
+            'role'            => $roleName,
+            'profil'          => $profil,
         ]);
     }
 

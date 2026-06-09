@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import KartuAnggota from '@/Components/KartuAnggota';
 import { Head, Link } from '@inertiajs/react';
-import { Wallet, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Wallet, ShieldCheck, ArrowRight, CreditCard, Users } from 'lucide-react';
 
 const quickLinks = [
     {
@@ -15,19 +16,27 @@ const quickLinks = [
         label: 'Verifikasi Berkas',
         desc: 'Periksa dan validasi berkas murid',
     },
+    {
+        href: 'pelatih.murid-baru.index',
+        icon: Users,
+        label: 'Murid Baru',
+        desc: 'Setujui atau tolak pendaftaran murid',
+    },
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ pelatih }) {
     return (
         <AuthenticatedLayout>
             <Head title="Pelatih Dashboard" />
 
             <div className="mb-6">
-                <h1 className="text-2xl font-semibold text-[#141c25]">Pelatih Dashboard</h1>
-                <p className="text-sm text-[#585f67] mt-0.5">Pantau perkembangan murid dan ranting Anda.</p>
+                <h1 className="text-2xl font-semibold text-[#141c25]">Dashboard Pelatih</h1>
+                <p className="text-sm text-[#585f67] mt-0.5">
+                    {pelatih ? `Selamat datang, ${pelatih.gelar ? pelatih.gelar + ' ' : ''}${pelatih.nama}.` : 'Pantau perkembangan murid dan ranting Anda.'}
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl">
                 {quickLinks.map(({ href, icon: Icon, label, desc }) => (
                     <Link
                         key={href}
@@ -47,6 +56,25 @@ export default function Dashboard() {
                     </Link>
                 ))}
             </div>
+
+            {/* Kartu Anggota — hanya tampil jika pelatih punya nomor anggota */}
+            {pelatih?.nomor_anggota && (
+                <div className="mt-8">
+                    <div className="flex items-center gap-2 mb-4">
+                        <CreditCard size={18} className="text-[#610000]" />
+                        <h2 className="text-lg font-semibold text-[#141c25]">Kartu Anggota</h2>
+                    </div>
+                    <KartuAnggota
+                        nama={pelatih.nama}
+                        nomor_anggota={pelatih.nomor_anggota}
+                        ranting={pelatih.ranting}
+                        role="Pelatih"
+                        foto={pelatih.foto}
+                        gelar={pelatih.gelar}
+                        sabuk={pelatih.sabuk}
+                    />
+                </div>
+            )}
         </AuthenticatedLayout>
     );
 }

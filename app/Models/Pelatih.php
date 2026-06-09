@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['user_id', 'nomor_anggota', 'ranting_id', 'gelar', 'sabuk_id', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'nomor_hp'])]
+#[Fillable(['user_id', 'nomor_anggota', 'ranting_id', 'foto', 'gelar', 'sabuk_id', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'nomor_hp'])]
 class Pelatih extends Model
 {
     protected function casts(): array

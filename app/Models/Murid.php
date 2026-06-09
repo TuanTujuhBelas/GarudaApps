@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'user_id', 'nomor_anggota', 'ranting_id',
+    'user_id', 'nomor_anggota', 'ranting_id', 'foto',
     'tempat_lahir', 'tanggal_lahir', 'nomor_hp',
     'pernah_beladiri', 'jenis_beladiri', 'alasan_mendaftar',
     'status_verifikasi', 'disetujui_oleh', 'disetujui_pada',

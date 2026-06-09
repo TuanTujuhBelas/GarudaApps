@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import KartuAnggota from '@/Components/KartuAnggota';
 import { Head, Link, router } from '@inertiajs/react';
-import { Clock, CheckCircle, User, Calendar, Award, LogOut } from 'lucide-react';
+import { Clock, CheckCircle, User, Calendar, Award, LogOut, CreditCard } from 'lucide-react';
 
 export default function Dashboard({ murid, pending }) {
     const handleLogout = () => {
@@ -14,9 +15,7 @@ export default function Dashboard({ murid, pending }) {
 
                 <div className="min-h-[60vh] flex items-center justify-center">
                     <div className="max-w-lg w-full">
-                        {/* Pending State Card */}
                         <div className="bg-white border border-orange-100 rounded-2xl shadow-sm overflow-hidden">
-                            {/* Header */}
                             <div className="bg-orange-50 border-b border-orange-100 px-8 py-8 text-center">
                                 <div className="mx-auto mb-4 w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
                                     <Clock size={32} className="text-orange-500" />
@@ -27,10 +26,8 @@ export default function Dashboard({ murid, pending }) {
                                 </p>
                             </div>
 
-                            {/* Data Pendaftaran */}
                             <div className="px-8 py-6 space-y-4">
                                 <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Data yang Sudah Diisi</h2>
-
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 bg-[#ffebee] rounded flex items-center justify-center flex-shrink-0">
@@ -41,7 +38,6 @@ export default function Dashboard({ murid, pending }) {
                                             <p className="text-sm font-semibold text-[#141c25]">{murid.nama}</p>
                                         </div>
                                     </div>
-
                                     <div className="flex items-center gap-3">
                                         <div className="w-8 h-8 bg-[#ffebee] rounded flex items-center justify-center flex-shrink-0">
                                             <span className="text-[#610000] text-xs font-bold">@</span>
@@ -51,7 +47,6 @@ export default function Dashboard({ murid, pending }) {
                                             <p className="text-sm font-semibold text-[#141c25]">{murid.email}</p>
                                         </div>
                                     </div>
-
                                     {murid.ranting && (
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 bg-[#ffebee] rounded flex items-center justify-center flex-shrink-0">
@@ -64,7 +59,6 @@ export default function Dashboard({ murid, pending }) {
                                         </div>
                                     )}
                                 </div>
-
                                 <div className="pt-2 border-t border-gray-100">
                                     <div className="flex items-center gap-2 text-xs text-orange-500">
                                         <Clock size={13} />
@@ -73,7 +67,6 @@ export default function Dashboard({ murid, pending }) {
                                 </div>
                             </div>
 
-                            {/* Logout */}
                             <div className="px-8 pb-6">
                                 <button
                                     onClick={handleLogout}
@@ -90,7 +83,8 @@ export default function Dashboard({ murid, pending }) {
         );
     }
 
-    // Dashboard normal (sudah diverifikasi)
+    const isAktif = murid.status_verifikasi === 'Aktif';
+
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard Murid" />
@@ -127,7 +121,7 @@ export default function Dashboard({ murid, pending }) {
                     </div>
                 </div>
 
-                {/* Kartu Ranting / Tingkatan */}
+                {/* Kartu Ranting */}
                 <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 bg-[#ffebee] rounded flex items-center justify-center">
@@ -140,7 +134,7 @@ export default function Dashboard({ murid, pending }) {
                     </span>
                 </div>
 
-                {/* Kartu Status Verifikasi */}
+                {/* Kartu Status */}
                 <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="w-8 h-8 bg-[#ffebee] rounded flex items-center justify-center">
@@ -167,16 +161,35 @@ export default function Dashboard({ murid, pending }) {
                 </div>
             </div>
 
+            {/* Kartu Anggota Section — hanya tampil jika aktif dan punya nomor anggota */}
+            {isAktif && murid.nomor_anggota && (
+                <div className="mt-8 max-w-4xl">
+                    <div className="flex items-center gap-2 mb-4">
+                        <CreditCard size={18} className="text-[#610000]" />
+                        <h2 className="text-lg font-semibold text-[#141c25]">Kartu Anggota</h2>
+                    </div>
+                    <KartuAnggota
+                        nama={murid.nama}
+                        nomor_anggota={murid.nomor_anggota}
+                        ranting={murid.ranting}
+                        role="Murid"
+                        foto={murid.foto}
+                    />
+                </div>
+            )}
+
             {/* Quick link */}
-            <div className="mt-4 max-w-4xl">
-                <Link
-                    href={route('murid.events.index')}
-                    className="inline-flex items-center gap-2 text-sm text-[#610000] hover:text-[#7a0000] font-medium transition-colors"
-                >
-                    <Calendar size={15} />
-                    Lihat Acara Mendatang &rarr;
-                </Link>
-            </div>
+            {isAktif && (
+                <div className="mt-4 max-w-4xl">
+                    <Link
+                        href={route('murid.events.index')}
+                        className="inline-flex items-center gap-2 text-sm text-[#610000] hover:text-[#7a0000] font-medium transition-colors"
+                    >
+                        <Calendar size={15} />
+                        Lihat Acara Mendatang &rarr;
+                    </Link>
+                </div>
+            )}
         </AuthenticatedLayout>
     );
 }
