@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Murid;
 use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class VerifikasiMuridController extends Controller
@@ -42,24 +41,18 @@ class VerifikasiMuridController extends Controller
             return redirect()->back()->with('error', 'Murid ini sudah diverifikasi.');
         }
 
-        DB::transaction(function () use ($murid) {
-            $ranting = $murid->ranting;
-            $nomor   = $ranting->generateNomorAnggota();
+        $murid->update([
+            'status_verifikasi' => 'Aktif',
+            'disetujui_oleh'    => auth()->id(),
+            'disetujui_pada'    => now(),
+        ]);
 
-            $murid->update([
-                'status_verifikasi' => 'Aktif',
-                'nomor_anggota'     => $nomor,
-                'disetujui_oleh'    => auth()->id(),
-                'disetujui_pada'    => now(),
-            ]);
-
-            ActivityLogger::log(
-                'approve_murid',
-                "Pelatih " . auth()->user()->name . " menyetujui murid {$murid->user->name} — No. {$nomor}",
-                'Murid',
-                $murid->id
-            );
-        });
+        ActivityLogger::log(
+            'approve_murid',
+            "Pelatih " . auth()->user()->name . " menyetujui murid {$murid->user->name}",
+            'Murid',
+            $murid->id
+        );
 
         return redirect()->back()->with('message', 'Murid berhasil disetujui dan nomor anggota telah diterbitkan.');
     }

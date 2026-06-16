@@ -3,7 +3,7 @@ import gamaLogo from '../../../public/gama.png';
 import { useState } from 'react';
 import {
     LayoutDashboard, Users, CalendarDays, Wallet, BookOpen,
-    ShieldCheck, Calendar, LogOut, User, Menu, Award,
+    ShieldCheck, Calendar, LogOut, User, Menu, Award, Coins, ScrollText, MapPin,
 } from 'lucide-react';
 
 const NAV_LINKS = {
@@ -12,6 +12,9 @@ const NAV_LINKS = {
         { href: 'admin.events.index',   label: 'Kelola Acara',     icon: CalendarDays },
         { href: 'admin.keuangan.index', label: 'Laporan Kas',      icon: Wallet },
         { href: 'admin.sabuk.index',    label: 'Tingkatan Sabuk',  icon: Award },
+        { href: 'admin.ranting.index',  label: 'Kelola Ranting',   icon: MapPin },
+        { href: 'admin.royalti.index',  label: 'Royalti Pelatih',  icon: Coins },
+        { href: 'admin.logs.index',     label: 'Log Aktivitas',    icon: ScrollText },
     ],
     'Bendahara': [
         { href: 'bendahara.keuangan.index', label: 'Buku Kas', icon: BookOpen },

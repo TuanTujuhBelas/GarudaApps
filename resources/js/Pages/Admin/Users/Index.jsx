@@ -1,17 +1,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import { useState, useEffect, useRef } from 'react';
-import { User, Mail, Shield, Trash2, Edit2, Search, X, Check, Clock } from 'lucide-react';
+import { User, Mail, Shield, Trash2, Edit2, Search, X, Check, Clock, CreditCard, Hash } from 'lucide-react';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import PrimaryButton from '@/Components/PrimaryButton';
 import DangerButton from '@/Components/DangerButton';
 import InputLabel from '@/Components/InputLabel';
+import KartuAnggota from '@/Components/KartuAnggota';
 
-export default function Index({ users, roles, filters, stats }) {
+export default function Index({ users, roles, rantings, tingkatanSabuk, filters, stats }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
+    const [kartuUser, setKartuUser] = useState(null);
     const isFirstRender = useRef(true);
 
     const isSuperAdmin = (user) => user?.role?.nama_role === 'Super Admin';
@@ -31,15 +33,21 @@ export default function Index({ users, roles, filters, stats }) {
     }, [search]);
 
     const { data, setData, patch, processing, reset, delete: destroy } = useForm({
-        role_id: '',
-        is_aktif: true,
+        role_id:   '',
+        is_aktif:  true,
+        ranting_id: '',
+        sabuk_id:  '',
     });
+
+    const getRantingId = (user) => user.profil?.ranting_id ?? '';
 
     const openEditModal = (user) => {
         setEditingUser(user);
         setData({
-            role_id: user.role_id,
-            is_aktif: !!user.is_aktif,
+            role_id:    user.role_id,
+            is_aktif:   !!user.is_aktif,
+            ranting_id: getRantingId(user),
+            sabuk_id:   user.profil?.sabuk_id ?? '',
         });
     };
 
@@ -98,7 +106,12 @@ export default function Index({ users, roles, filters, stats }) {
                 </div>
             );
         }
-        return <span className="text-sm text-gray-300">-</span>;
+        // Super Admin & Bendahara — tampilkan nomor anggota dari adminProfile
+        return (
+            <span className="text-sm text-[#585f67] font-mono">
+                {user.profil?.nomor_anggota ?? '-'}
+            </span>
+        );
     };
 
     const userList = users.data;
@@ -157,6 +170,7 @@ export default function Index({ users, roles, filters, stats }) {
                             <tr className="bg-[#2a2d2e] text-white text-xs uppercase tracking-wider font-medium">
                                 <th className="px-6 py-4">Pengguna</th>
                                 <th className="px-6 py-4">Role</th>
+                                <th className="px-6 py-4">Ranting</th>
                                 <th className="px-6 py-4">No. Anggota / Status</th>
                                 <th className="px-6 py-4">Status Akun</th>
                                 <th className="px-6 py-4 text-right">Aksi</th>
@@ -177,9 +191,6 @@ export default function Index({ users, roles, filters, stats }) {
                                                 <p className="text-xs text-[#585f67] flex items-center gap-1 mt-0.5">
                                                     <Mail size={11} /> {user.email}
                                                 </p>
-                                                {(user.role?.nama_role === 'Pelatih' || user.role?.nama_role === 'Murid') && user.profil?.ranting && (
-                                                    <p className="text-xs text-gray-400 mt-0.5">{user.profil.ranting}</p>
-                                                )}
                                             </div>
                                         </div>
                                     </td>
@@ -192,6 +203,18 @@ export default function Index({ users, roles, filters, stats }) {
                                         }`}>
                                             <Shield size={11} /> {user.role?.nama_role ?? '-'}
                                         </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {user.profil?.ranting ? (
+                                            <div className="space-y-1">
+                                                <span className="text-sm text-[#141c25]">{user.profil.ranting}</span>
+                                                {user.profil?.ranting_tambahan?.map((r, i) => (
+                                                    <p key={i} className="text-xs text-[#585f67]">{r.nama}</p>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-gray-300">—</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
                                         {getAnggotaStatusCell(user)}
@@ -209,6 +232,24 @@ export default function Index({ users, roles, filters, stats }) {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-1">
+                                            {!user.profil?.nomor_anggota && (
+                                                <button
+                                                    onClick={() => router.post(route('admin.users.generate-nomor', user.id))}
+                                                    className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                                                    title="Generate Nomor Anggota"
+                                                >
+                                                    <Hash size={15} />
+                                                </button>
+                                            )}
+                                            {user.profil && (
+                                                <button
+                                                    onClick={() => setKartuUser(user)}
+                                                    className="p-1.5 text-gray-400 hover:text-[#610000] hover:bg-[#ffebee] rounded-lg transition-all"
+                                                    title="Lihat Kartu Anggota"
+                                                >
+                                                    <CreditCard size={15} />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => openEditModal(user)}
                                                 className="p-1.5 text-gray-400 hover:text-[#141c25] hover:bg-gray-100 rounded-lg transition-all"
@@ -290,6 +331,40 @@ export default function Index({ users, roles, filters, stats }) {
                             )}
                         </div>
 
+                        {(['Pelatih', 'Murid', 'Super Admin', 'Bendahara'].includes(roles.find(r => String(r.id) === String(data.role_id))?.nama_role)) && (
+                            <div>
+                                <InputLabel htmlFor="ranting_id" value="Ranting" className="text-[#585f67]" />
+                                <select
+                                    id="ranting_id"
+                                    value={data.ranting_id}
+                                    onChange={(e) => setData('ranting_id', e.target.value)}
+                                    className="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 text-[#141c25] rounded-lg focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000] appearance-none text-sm"
+                                >
+                                    <option value="">— Belum ditentukan —</option>
+                                    {rantings.map(r => (
+                                        <option key={r.id} value={r.id}>
+                                            [{r.kode}] {r.nama_ranting}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        <div>
+                            <InputLabel htmlFor="sabuk_id" value="Tingkatan Sabuk" className="text-[#585f67]" />
+                            <select
+                                id="sabuk_id"
+                                value={data.sabuk_id}
+                                onChange={(e) => setData('sabuk_id', e.target.value)}
+                                className="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 text-[#141c25] rounded-lg focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000] appearance-none text-sm"
+                            >
+                                <option value="">— Belum ditentukan —</option>
+                                {tingkatanSabuk.map(s => (
+                                    <option key={s.id} value={s.id}>{s.nama_sabuk}</option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
@@ -307,6 +382,30 @@ export default function Index({ users, roles, filters, stats }) {
                         <PrimaryButton disabled={processing}>Simpan Perubahan</PrimaryButton>
                     </div>
                 </form>
+            </Modal>
+
+            {/* Kartu Anggota Modal */}
+            <Modal show={!!kartuUser} onClose={() => setKartuUser(null)} maxWidth="sm">
+                <div className="p-6 bg-white rounded-lg">
+                    <div className="flex items-center gap-2 mb-5">
+                        <CreditCard size={18} className="text-[#610000]" />
+                        <h2 className="text-lg font-semibold text-[#141c25]">Kartu Anggota</h2>
+                    </div>
+                    {kartuUser && (
+                        <KartuAnggota
+                            nama={kartuUser.name}
+                            nomor_anggota={kartuUser.profil?.nomor_anggota}
+                            ranting={kartuUser.profil?.ranting}
+                            role={kartuUser.role?.nama_role}
+                            foto={kartuUser.profil?.foto}
+                            gelar={kartuUser.profil?.gelar}
+                            sabuk={kartuUser.profil?.sabuk}
+                        />
+                    )}
+                    <div className="mt-4 flex justify-end">
+                        <SecondaryButton onClick={() => setKartuUser(null)}>Tutup</SecondaryButton>
+                    </div>
+                </div>
             </Modal>
 
             {/* Delete Modal */}

@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useRef, useState } from 'react';
-import { Camera, CheckCircle, AlertCircle } from 'lucide-react';
+import { Camera, CheckCircle, AlertCircle, Award } from 'lucide-react';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
@@ -15,7 +15,8 @@ function FotoUploadSection({ profil, role }) {
     const message = page.props.message;
     const serverError = page.props.error;
 
-    if (!['Murid', 'Pelatih'].includes(role)) return null;
+    // Foto diperbolehkan untuk semua role
+    void role;
 
     const handleFile = (e) => {
         const file = e.target.files[0];
@@ -99,7 +100,73 @@ function FotoUploadSection({ profil, role }) {
     );
 }
 
-export default function Edit({ mustVerifyEmail, status, role, profil }) {
+function SabukUpdateSection({ profil, tingkatanSabuk }) {
+    const page    = usePage();
+    const message = page.props.message;
+
+    const { data, setData, patch, processing } = useForm({
+        sabuk_id: profil?.sabuk_id ?? '',
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(route('profile.sabuk'));
+    };
+
+    return (
+        <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+            <section className="max-w-xl">
+                <header>
+                    <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                        <Award size={18} className="text-[#610000]" /> Tingkatan Sabuk
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                        Perbarui tingkatan sabuk pencak silat Anda.
+                    </p>
+                </header>
+
+                {message && (
+                    <div className="mt-3 flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                        <CheckCircle size={14} /> {message}
+                    </div>
+                )}
+
+                <form onSubmit={submit} className="mt-6 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Tingkatan Sabuk</label>
+                        <select
+                            value={data.sabuk_id}
+                            onChange={(e) => setData('sabuk_id', e.target.value)}
+                            className="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#610000]/40 focus:border-[#610000]"
+                        >
+                            <option value="">— Belum ditentukan —</option>
+                            {tingkatanSabuk.map(s => (
+                                <option key={s.id} value={s.id}>{s.nama_sabuk}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="px-4 py-2 bg-[#610000] hover:bg-[#7a0000] disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+                        >
+                            {processing ? 'Menyimpan...' : 'Simpan'}
+                        </button>
+                        {profil?.sabuk && (
+                            <span className="text-sm text-gray-500">
+                                Saat ini: <span className="font-medium text-gray-700">{profil.sabuk}</span>
+                            </span>
+                        )}
+                    </div>
+                </form>
+            </section>
+        </div>
+    );
+}
+
+export default function Edit({ mustVerifyEmail, status, role, profil, tingkatanSabuk }) {
     return (
         <AuthenticatedLayout
             header={
@@ -113,6 +180,8 @@ export default function Edit({ mustVerifyEmail, status, role, profil }) {
             <div className="py-12">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                     <FotoUploadSection profil={profil} role={role} />
+
+                    <SabukUpdateSection profil={profil} tingkatanSabuk={tingkatanSabuk ?? []} />
 
                     <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                         <UpdateProfileInformationForm

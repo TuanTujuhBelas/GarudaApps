@@ -24,7 +24,7 @@ export default function Register({ roles, rantings }) {
         pernah_beladiri: false,
         jenis_beladiri: '',
         alasan_mendaftar: '',
-        training_locations: [{ nama_lokasi: '', alamat_lokasi: '' }],
+        ranting_tambahan: [],
     });
 
     useEffect(() => {
@@ -35,20 +35,36 @@ export default function Register({ roles, rantings }) {
 
     const selectedRole = roles.find(r => r.id == data.role_id)?.nama_role;
 
-    const addLocation = () => {
-        setData('training_locations', [...data.training_locations, { nama_lokasi: '', alamat_lokasi: '' }]);
+    // Ranting tambahan untuk Pelatih
+    const addRantingTambahan = () => {
+        setData('ranting_tambahan', [...data.ranting_tambahan, '']);
     };
 
-    const removeLocation = (index) => {
-        const newLocations = data.training_locations.filter((_, i) => i !== index);
-        setData('training_locations', newLocations);
+    const removeRantingTambahan = (index) => {
+        setData('ranting_tambahan', data.ranting_tambahan.filter((_, i) => i !== index));
     };
 
-    const handleLocationChange = (index, field, value) => {
-        const newLocations = [...data.training_locations];
-        newLocations[index][field] = value;
-        setData('training_locations', newLocations);
+    const updateRantingTambahan = (index, value) => {
+        const updated = [...data.ranting_tambahan];
+        updated[index] = value;
+        setData('ranting_tambahan', updated);
     };
+
+    // Ranting yang sudah terpilih (utama + tambahan), untuk filter dropdown
+    const selectedRantingIds = [
+        data.ranting_id,
+        ...data.ranting_tambahan,
+    ].filter(Boolean);
+
+    const availableRantings = (excludeIndex = null) =>
+        rantings.filter(r => {
+            const chosen = selectedRantingIds.filter((_, i) => {
+                // index 0 = ranting_id (utama), index 1+ = ranting_tambahan[i-1]
+                if (excludeIndex === null) return true;
+                return i !== excludeIndex + 1;
+            });
+            return !chosen.includes(String(r.id));
+        });
 
     const submit = (e) => {
         e.preventDefault();
@@ -244,41 +260,56 @@ export default function Register({ roles, rantings }) {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-sm font-bold text-red-500 uppercase tracking-wider">Lokasi Ranting yang Dilatih</h3>
+                                            <h3 className="text-sm font-bold text-red-500 uppercase tracking-wider">Ranting yang Dilatih</h3>
                                             <button
                                                 type="button"
-                                                onClick={addLocation}
-                                                className="flex items-center gap-1 text-xs font-bold text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg transition-colors"
+                                                onClick={addRantingTambahan}
+                                                disabled={selectedRantingIds.filter(Boolean).length >= rantings.length}
+                                                className="flex items-center gap-1 text-xs font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg transition-colors"
                                             >
-                                                <Plus size={14} /> Tambah Lokasi
+                                                <Plus size={14} /> Tambah Ranting
                                             </button>
                                         </div>
 
-                                        {data.training_locations.map((loc, index) => (
-                                            <div key={index} className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3 relative group/loc">
-                                                {data.training_locations.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeLocation(index)}
-                                                        className="absolute top-2 right-2 p-1.5 text-gray-500 hover:text-red-500 transition-colors"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                )}
-                                                <TextInput
-                                                    placeholder="Nama Ranting / Lokasi (Contoh: Ranting Kebayoran)"
-                                                    value={loc.nama_lokasi}
-                                                    className="w-full bg-white/5 border-white/10"
-                                                    onChange={(e) => handleLocationChange(index, 'nama_lokasi', e.target.value)}
-                                                />
-                                                <textarea
-                                                    placeholder="Alamat Lengkap / Link Google Maps"
-                                                    value={loc.alamat_lokasi}
-                                                    className="w-full px-4 py-2 bg-white/5 border border-white/10 text-white rounded-xl text-sm focus:ring-1 focus:ring-red-500"
-                                                    onChange={(e) => handleLocationChange(index, 'alamat_lokasi', e.target.value)}
-                                                />
+                                        {/* Ranting utama — read-only, auto dari pilihan di atas */}
+                                        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                                            <MapPin size={15} className="text-red-400 flex-shrink-0" />
+                                            <span className="text-sm text-white flex-1">
+                                                {rantings.find(r => String(r.id) === String(data.ranting_id))
+                                                    ? `[${rantings.find(r => String(r.id) === String(data.ranting_id)).kode}] ${rantings.find(r => String(r.id) === String(data.ranting_id)).nama_ranting}`
+                                                    : <span className="text-gray-500 italic">Pilih ranting utama di atas terlebih dahulu</span>
+                                                }
+                                            </span>
+                                            <span className="text-xs text-red-400 font-medium">Utama</span>
+                                        </div>
+
+                                        {/* Ranting tambahan */}
+                                        {data.ranting_tambahan.map((rid, index) => (
+                                            <div key={index} className="flex items-center gap-2">
+                                                <select
+                                                    value={rid}
+                                                    onChange={(e) => updateRantingTambahan(index, e.target.value)}
+                                                    className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm focus:ring-2 focus:ring-red-500/50 focus:border-red-500 appearance-none"
+                                                >
+                                                    <option value="" className="bg-black">— Pilih ranting tambahan —</option>
+                                                    {rantings
+                                                        .filter(r => !selectedRantingIds.includes(String(r.id)) || String(r.id) === String(rid))
+                                                        .map(r => (
+                                                            <option key={r.id} value={r.id} className="bg-black">
+                                                                [{r.kode}] {r.nama_ranting}
+                                                            </option>
+                                                        ))
+                                                    }
+                                                </select>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeRantingTambahan(index)}
+                                                    className="p-2 text-gray-500 hover:text-red-500 transition-colors flex-shrink-0"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
                                         ))}
                                     </div>

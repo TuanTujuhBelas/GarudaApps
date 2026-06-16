@@ -21,6 +21,7 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/sabuk', [ProfileController::class, 'updateSabuk'])->name('profile.sabuk');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/foto', [\App\Http\Controllers\FotoController::class, 'update'])->name('profile.foto');
 });
@@ -31,6 +32,7 @@ Route::middleware(['auth', 'verified', 'role:Super Admin'])->group(function () {
     Route::get('/admin/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.users.index');
     Route::patch('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.users.update');
     Route::delete('/admin/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::post('/admin/users/{user}/generate-nomor', [\App\Http\Controllers\Admin\UserController::class, 'generateNomor'])->name('admin.users.generate-nomor');
 
     // Keuangan
     Route::get('/admin/keuangan', [\App\Http\Controllers\Admin\KeuanganController::class, 'index'])->name('admin.keuangan.index');

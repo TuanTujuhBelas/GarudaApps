@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable(['pelatih_id', 'nominal', 'keterangan', 'tanggal_pembayaran', 'dicatat_oleh'])]
 class Royalti extends Model
 {
+    protected $table = 'royalti';
     protected function casts(): array
     {
         return [

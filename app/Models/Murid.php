@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
 #[Fillable([
-    'user_id', 'nomor_anggota', 'ranting_id', 'foto',
+    'user_id', 'nomor_anggota', 'ranting_id', 'sabuk_id', 'foto',
     'tempat_lahir', 'tanggal_lahir', 'nomor_hp',
     'pernah_beladiri', 'jenis_beladiri', 'alasan_mendaftar',
     'status_verifikasi', 'disetujui_oleh', 'disetujui_pada',
@@ -32,6 +32,11 @@ class Murid extends Model
     public function ranting()
     {
         return $this->belongsTo(Ranting::class);
+    }
+
+    public function tingkatanSabuk()
+    {
+        return $this->belongsTo(TingkatanSabuk::class, 'sabuk_id');
     }
 
     public function disetujuiOleh()

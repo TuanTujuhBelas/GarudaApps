@@ -46,12 +46,11 @@ class RegisteredUserController extends Controller
             'alasan_mendaftar' => 'nullable|string|max:2000',
 
             // Pelatih
-            'gelar'             => 'nullable|string|max:100',
-            'alamat'            => 'nullable|string|max:2000',
-            'sabuk_id'          => 'nullable|exists:tingkatan_sabuk,id',
-            'training_locations'              => 'nullable|array|max:10',
-            'training_locations.*.nama_lokasi'   => 'nullable|string|max:255',
-            'training_locations.*.alamat_lokasi' => 'nullable|string|max:1000',
+            'gelar'                  => 'nullable|string|max:100',
+            'alamat'                 => 'nullable|string|max:2000',
+            'sabuk_id'               => 'nullable|exists:tingkatan_sabuk,id',
+            'ranting_tambahan'       => 'nullable|array|max:20',
+            'ranting_tambahan.*'     => 'nullable|exists:rantings,id',
         ]);
 
         $user = User::create([
@@ -63,40 +62,50 @@ class RegisteredUserController extends Controller
         ]);
 
         $roleName = \App\Models\Role::find($request->role_id)?->nama_role;
+        $ranting  = $request->ranting_id
+            ? \App\Models\Ranting::find($request->ranting_id)
+            : \App\Models\Ranting::where('kode', '001')->first();
 
         if ($roleName === 'Murid') {
-            Murid::create([
-                'user_id'          => $user->id,
-                'ranting_id'       => $request->ranting_id,
-                'tempat_lahir'     => $request->tempat_lahir,
-                'tanggal_lahir'    => $request->tanggal_lahir,
-                'nomor_hp'         => $request->nomor_hp,
-                'pernah_beladiri'  => $request->boolean('pernah_beladiri'),
-                'jenis_beladiri'   => $request->jenis_beladiri,
-                'alasan_mendaftar' => $request->alasan_mendaftar,
+            $murid = Murid::create([
+                'user_id'           => $user->id,
+                'ranting_id'        => $request->ranting_id,
+                'tempat_lahir'      => $request->tempat_lahir,
+                'tanggal_lahir'     => $request->tanggal_lahir,
+                'nomor_hp'          => $request->nomor_hp,
+                'pernah_beladiri'   => $request->boolean('pernah_beladiri'),
+                'jenis_beladiri'    => $request->jenis_beladiri,
+                'alasan_mendaftar'  => $request->alasan_mendaftar,
                 'status_verifikasi' => 'Menunggu',
             ]);
+
+            if ($ranting) {
+                $murid->update(['nomor_anggota' => $ranting->generateNomorAnggota($user)]);
+            }
         }
 
         if ($roleName === 'Pelatih') {
-            Pelatih::create([
-                'user_id'      => $user->id,
-                'ranting_id'   => $request->ranting_id,
-                'gelar'        => $request->gelar,
-                'sabuk_id'     => $request->sabuk_id,
-                'tempat_lahir' => $request->tempat_lahir,
+            $pelatih = Pelatih::create([
+                'user_id'       => $user->id,
+                'ranting_id'    => $request->ranting_id,
+                'gelar'         => $request->gelar,
+                'sabuk_id'      => $request->sabuk_id,
+                'tempat_lahir'  => $request->tempat_lahir,
                 'tanggal_lahir' => $request->tanggal_lahir,
-                'alamat'       => $request->alamat,
-                'nomor_hp'     => $request->nomor_hp,
+                'alamat'        => $request->alamat,
+                'nomor_hp'      => $request->nomor_hp,
             ]);
 
-            if ($request->has('training_locations') && is_array($request->training_locations)) {
-                foreach ($request->training_locations as $loc) {
-                    if (!empty($loc['nama_lokasi']) && !empty($loc['alamat_lokasi'])) {
-                        $user->trainingLocations()->create([
-                            'nama_lokasi'   => $loc['nama_lokasi'],
-                            'alamat_lokasi' => $loc['alamat_lokasi'],
-                        ]);
+            if ($ranting) {
+                $pelatih->update(['nomor_anggota' => $ranting->generateNomorAnggota($user)]);
+            }
+
+            // Simpan ranting tambahan (selain ranting utama)
+            if ($request->has('ranting_tambahan') && is_array($request->ranting_tambahan)) {
+                $rantingTambahan = array_filter(array_unique($request->ranting_tambahan));
+                foreach ($rantingTambahan as $rid) {
+                    if ($rid != $request->ranting_id) {
+                        $user->trainingLocations()->create(['ranting_id' => $rid]);
                     }
                 }
             }

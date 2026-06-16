@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
-import { Users, CalendarDays, Wallet, Award } from 'lucide-react';
+import { Users, CalendarDays, Wallet, Award, Coins, ScrollText } from 'lucide-react';
 
 const quickLinks = [
     {
@@ -26,6 +26,18 @@ const quickLinks = [
         icon: Award,
         label: 'Tingkatan Sabuk',
         desc: 'Kelola level sabuk pencak silat',
+    },
+    {
+        href: 'admin.royalti.index',
+        icon: Coins,
+        label: 'Royalti Pelatih',
+        desc: 'Catat dan pantau pembayaran royalti pelatih',
+    },
+    {
+        href: 'admin.logs.index',
+        icon: ScrollText,
+        label: 'Log Aktivitas',
+        desc: 'Riwayat semua aktivitas pengguna di sistem',
     },
 ];
 

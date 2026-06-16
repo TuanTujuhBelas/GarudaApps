@@ -31,26 +31,44 @@ class RantingController extends Controller
     {
         $request->validate([
             'nama_ranting' => 'required|string|max:255',
-            'kode'         => 'required|string|max:10|unique:rantings,kode',
             'keterangan'   => 'nullable|string|max:500',
+            'maps'         => 'nullable|string|max:500',
+            'status'       => 'required|in:Aktif,Nonaktif',
+            'honor'        => 'nullable|numeric|min:0',
         ]);
 
-        $ranting = Ranting::create($request->only(['nama_ranting', 'kode', 'keterangan']));
+        // Auto-generate kode 3 digit numerik
+        $lastKode = Ranting::whereRaw("kode ~ '^[0-9]+$'")
+            ->orderByRaw('CAST(kode AS INTEGER) DESC')
+            ->value('kode') ?? '000';
+        $newKode = str_pad((int) $lastKode + 1, 3, '0', STR_PAD_LEFT);
+
+        $ranting = Ranting::create([
+            'nama_ranting'        => $request->nama_ranting,
+            'kode'                => $newKode,
+            'keterangan'          => $request->keterangan,
+            'maps'                => $request->maps,
+            'status'              => $request->status,
+            'honor'               => $request->honor,
+            'nomor_urut_terakhir' => 0,
+        ]);
 
         ActivityLogger::log('create_ranting', "Ranting '{$ranting->nama_ranting}' ({$ranting->kode}) dibuat", 'Ranting', $ranting->id);
 
-        return redirect()->back()->with('message', 'Ranting berhasil ditambahkan.');
+        return redirect()->back()->with('message', "Ranting '{$ranting->nama_ranting}' berhasil ditambahkan dengan kode {$ranting->kode}.");
     }
 
     public function update(Request $request, Ranting $ranting)
     {
         $request->validate([
             'nama_ranting' => 'required|string|max:255',
-            'kode'         => "required|string|max:10|unique:rantings,kode,{$ranting->id}",
             'keterangan'   => 'nullable|string|max:500',
+            'maps'         => 'nullable|string|max:500',
+            'status'       => 'required|in:Aktif,Nonaktif',
+            'honor'        => 'nullable|numeric|min:0',
         ]);
 
-        $ranting->update($request->only(['nama_ranting', 'kode', 'keterangan']));
+        $ranting->update($request->only(['nama_ranting', 'keterangan', 'maps', 'status', 'honor']));
 
         ActivityLogger::log('update_ranting', "Ranting '{$ranting->nama_ranting}' ({$ranting->kode}) diperbarui", 'Ranting', $ranting->id);
 
@@ -61,6 +79,10 @@ class RantingController extends Controller
     {
         if ($ranting->murid()->exists() || $ranting->pelatih()->exists()) {
             return redirect()->back()->with('error', 'Ranting tidak bisa dihapus karena masih memiliki anggota.');
+        }
+
+        if ($ranting->kode === '001') {
+            return redirect()->back()->with('error', 'Ranting Pusat tidak dapat dihapus.');
         }
 
         ActivityLogger::log('delete_ranting', "Ranting '{$ranting->nama_ranting}' ({$ranting->kode}) dihapus", 'Ranting', $ranting->id);
