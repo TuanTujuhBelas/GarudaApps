@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class Murid extends Model
 {
+    protected $table = 'murid';
+
     protected function casts(): array
     {
         return [
